@@ -3,6 +3,7 @@ package simpledb.file;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.charset.*;
+import java.sql.Date;
 
 public class Page {
    private ByteBuffer bb;
@@ -31,6 +32,30 @@ public class Page {
       bb.putInt(offset, n);
    }
 
+   public int getShort(int offset) {
+      return bb.getShort(offset);
+   }
+
+   public void setShort(int offset, short n){
+      if (blockSize - offset < Short.BYTES){
+         throw new BufferOverflowException();
+      }
+      bb.putShort(offset, n);
+   }
+
+   public boolean getBoolean(int offset) {
+      return bb.get(offset) != 0;
+    }
+
+   public void setBoolean(int offset, boolean b){
+      if (blockSize - offset < 1){
+         throw new BufferOverflowException();
+      }
+      // cast boolean into one byte
+      byte v = b ? (byte) 1 : 0;
+      bb.put(offset, v);
+   }
+
    public byte[] getBytes(int offset) {
       bb.position(offset);
       int length = bb.getInt();
@@ -56,6 +81,16 @@ public class Page {
    public void setString(int offset, String s) {
       byte[] b = s.getBytes(CHARSET);
       setBytes(offset, b);
+   }
+
+   public void setData(int offset, Date d){
+      String dateString = d.toString();
+      setString(offset,dateString);
+   }
+
+   public Date getDate(int offset){
+      String dateString = getString(offset);
+      return Date.valueOf(dateString);
    }
 
    public static int maxLength(int strlen) {
