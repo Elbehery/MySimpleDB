@@ -1,17 +1,20 @@
 package simpledb.file;
 
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.charset.*;
 
 public class Page {
    private ByteBuffer bb;
    public static Charset CHARSET = StandardCharsets.US_ASCII;
+   private int blockSize;
 
    // For creating data buffers
    public Page(int blocksize) {
       bb = ByteBuffer.allocateDirect(blocksize);
+      this.blockSize = blocksize;
    }
-   
+
    // For creating log pages
    public Page(byte[] b) {
       bb = ByteBuffer.wrap(b);
@@ -22,6 +25,9 @@ public class Page {
    }
 
    public void setInt(int offset, int n) {
+      if (blockSize - offset < Integer.BYTES){
+        throw new BufferOverflowException();
+      }
       bb.putInt(offset, n);
    }
 
@@ -34,11 +40,14 @@ public class Page {
    }
 
    public void setBytes(int offset, byte[] b) {
+      if (blockSize - offset < Integer.BYTES + b.length){
+        throw new BufferOverflowException();
+      }
       bb.position(offset);
       bb.putInt(b.length);
       bb.put(b);
    }
-   
+
    public String getString(int offset) {
       byte[] b = getBytes(offset);
       return new String(b, CHARSET);
