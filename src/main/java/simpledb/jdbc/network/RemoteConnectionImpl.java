@@ -62,6 +62,8 @@ class RemoteConnectionImpl extends UnicastRemoteObject implements RemoteConnecti
     */
    void commit() {
       currentTx.commit();
+      System.out.println("Number of read blocks is " + db.fileMgr().getReadBlocks());
+      System.out.println("Number of written blocks is " + db.fileMgr().getWrittenBlocks());
       currentTx = db.newTx();
    }
    
@@ -71,6 +73,8 @@ class RemoteConnectionImpl extends UnicastRemoteObject implements RemoteConnecti
     */
    void rollback() {
       currentTx.rollback();
+      System.out.println("Number of read blocks is " + db.fileMgr().getReadBlocks());
+      System.out.println("Number of written blocks is " + db.fileMgr().getWrittenBlocks());
       currentTx = db.newTx();
    }
 }
