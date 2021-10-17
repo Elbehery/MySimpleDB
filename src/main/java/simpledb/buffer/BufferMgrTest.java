@@ -5,7 +5,7 @@ import simpledb.file.*;
 
 public class BufferMgrTest {
    public static void main(String[] args) throws Exception {
-      SimpleDB db = new SimpleDB("buffermgrtest", 400, 3); // only 3 buffers
+      SimpleDB db = new SimpleDB("buffermgrtest", 400, 4); // only 3 buffers
       BufferMgr bm = db.bufferMgr();
 
       Buffer[] buff = new Buffer[6]; 

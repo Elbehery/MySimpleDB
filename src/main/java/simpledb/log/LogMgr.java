@@ -1,6 +1,9 @@
 package simpledb.log;
 
 import java.util.Iterator;
+
+import simpledb.buffer.Buffer;
+import simpledb.buffer.BufferMgr;
 import simpledb.file.*;
 
 /**
@@ -11,8 +14,10 @@ import simpledb.file.*;
  * @author Edward Sciore
  */
 public class LogMgr {
+   private BufferMgr bufferMgr;
    private FileMgr fm;
    private String logfile;
+   private Buffer buffer;
    private Page logpage;
    private BlockId currentblk;
    private int latestLSN = 0;
@@ -25,18 +30,18 @@ public class LogMgr {
     * @param FileMgr the file manager
     * @param logfile the name of the log file
     */
-   public LogMgr(FileMgr fm, String logfile) {
+   public LogMgr(BufferMgr bufferMgr, FileMgr fm, String logfile) {
+      this.bufferMgr = bufferMgr;
       this.fm = fm;
       this.logfile = logfile;
-      byte[] b = new byte[fm.blockSize()];
-      logpage = new Page(b);
       int logsize = fm.length(logfile);
       if (logsize == 0)
-         currentblk = appendNewBlock();
+         currentblk = new BlockId(logfile,0);
       else {
          currentblk = new BlockId(logfile, logsize-1);
-         fm.read(currentblk, logpage);
       }
+      this.buffer = bufferMgr.pin(currentblk);
+      this.logpage = buffer.contents();
    }
 
    /**
@@ -88,17 +93,18 @@ public class LogMgr {
     * Initialize the bytebuffer and append it to the log file.
     */
    private BlockId appendNewBlock() {
-      BlockId blk = fm.append(logfile);     
+      currentblk = new BlockId(logfile, currentblk.number()+1);
+      buffer = bufferMgr.pin(currentblk);
+      logpage = buffer.contents();
       logpage.setInt(0, fm.blockSize());
-      fm.write(blk, logpage);
-      return blk;
+      return currentblk;
    }
 
    /**
     * Write the buffer to the log file.
     */
    private void flush() {
-      fm.write(currentblk, logpage);
+      this.bufferMgr.flushAll(this.buffer.modifyingTx());
       lastSavedLSN = latestLSN;
    }
 }

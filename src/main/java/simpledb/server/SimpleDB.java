@@ -35,8 +35,8 @@ public class SimpleDB {
    public SimpleDB(String dirname, int blocksize, int buffsize) {
       File dbDirectory = new File(dirname);
       fm = new FileMgr(dbDirectory, blocksize);
-      lm = new LogMgr(fm, LOG_FILE);
-      bm = new BufferMgr(fm, lm, buffsize); 
+      bm = new BufferMgr(fm, lm, buffsize);
+      lm = new LogMgr(bm, fm, LOG_FILE);
    }
    
    /**
