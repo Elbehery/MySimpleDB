@@ -2,6 +2,7 @@ package simpledb.jdbc.embedded;
 
 import java.sql.SQLException;
 
+import simpledb.file.FileMgr;
 import simpledb.server.SimpleDB;
 import simpledb.tx.Transaction;
 import simpledb.plan.Planner;
@@ -17,6 +18,8 @@ class EmbeddedConnection extends ConnectionAdapter {
     private SimpleDB db;
     private Transaction currentTx;
     private Planner planner;
+    private FileMgr fileMgr;
+    private int blocksRead, blocksWritten;
 
     /**
      * Creates a connection
@@ -28,6 +31,9 @@ class EmbeddedConnection extends ConnectionAdapter {
         this.db = db;
         currentTx = db.newTx();
         planner = db.planner();
+        this.fileMgr = db.fileMgr();
+        this.blocksRead = fileMgr.getBlocksRead();
+        this.blocksWritten = fileMgr.getBlocksWritten();
     }
 
     /**
@@ -49,6 +55,8 @@ class EmbeddedConnection extends ConnectionAdapter {
      */
     public void commit() throws SQLException {
         currentTx.commit();
+        System.out.println("blocks read : " + (fileMgr.getBlocksRead() - this.blocksRead));
+        System.out.println("blocks written : " + (fileMgr.getBlocksWritten() - this.blocksWritten));
         currentTx = db.newTx();
     }
 
@@ -57,6 +65,8 @@ class EmbeddedConnection extends ConnectionAdapter {
      */
     public void rollback() throws SQLException {
         currentTx.rollback();
+        System.out.println("blocks read : " + (fileMgr.getBlocksRead() - this.blocksRead));
+        System.out.println("blocks written : " + (fileMgr.getBlocksWritten() - this.blocksWritten));
         currentTx = db.newTx();
     }
 

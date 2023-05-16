@@ -3,6 +3,7 @@ package simpledb.jdbc.network;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
+import simpledb.file.FileMgr;
 import simpledb.plan.Planner;
 import simpledb.server.SimpleDB;
 import simpledb.tx.Transaction;
@@ -17,6 +18,8 @@ class RemoteConnectionImpl extends UnicastRemoteObject implements RemoteConnecti
     private SimpleDB db;
     private Transaction currentTx;
     private Planner planner;
+    private FileMgr fileMgr;
+    private int blocksRead, blocksWritten;
 
     /**
      * Creates a remote connection
@@ -28,6 +31,9 @@ class RemoteConnectionImpl extends UnicastRemoteObject implements RemoteConnecti
         this.db = db;
         currentTx = db.newTx();
         planner = db.planner();
+        this.fileMgr = db.fileMgr();
+        this.blocksRead = fileMgr.getBlocksRead();
+        this.blocksWritten = fileMgr.getBlocksWritten();
     }
 
     /**
@@ -67,6 +73,8 @@ class RemoteConnectionImpl extends UnicastRemoteObject implements RemoteConnecti
      */
     void commit() {
         currentTx.commit();
+        System.out.println("blocks read : " + (fileMgr.getBlocksRead() - this.blocksRead));
+        System.out.println("blocks written : " + (fileMgr.getBlocksWritten() - this.blocksWritten));
         currentTx = db.newTx();
     }
 
@@ -76,6 +84,8 @@ class RemoteConnectionImpl extends UnicastRemoteObject implements RemoteConnecti
      */
     void rollback() {
         currentTx.rollback();
+        System.out.println("blocks read : " + (fileMgr.getBlocksRead() - this.blocksRead));
+        System.out.println("blocks written : " + (fileMgr.getBlocksWritten() - this.blocksWritten));
         currentTx = db.newTx();
     }
 }
