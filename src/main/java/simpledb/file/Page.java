@@ -22,6 +22,9 @@ public class Page {
     }
 
     public void setInt(int offset, int n) {
+        if (bb.capacity() - offset < Integer.BYTES) {
+            throw new RuntimeException("value does not fit into Page");
+        }
         bb.putInt(offset, n);
     }
 
@@ -34,6 +37,9 @@ public class Page {
     }
 
     public void setBytes(int offset, byte[] b) {
+        if (bb.capacity() - offset < b.length) {
+            throw new RuntimeException("value does not fit into Page");
+        }
         bb.position(offset);
         bb.putInt(b.length);
         bb.put(b);
