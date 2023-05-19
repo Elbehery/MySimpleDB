@@ -2,7 +2,6 @@ package simpledb.log;
 
 import java.util.Iterator;
 
-import simpledb.buffer.Buffer;
 import simpledb.file.*;
 
 /**
@@ -14,8 +13,7 @@ import simpledb.file.*;
 class LogIterator implements Iterator<byte[]> {
     private FileMgr fm;
     private BlockId blk;
-    //private Page p;
-    private Buffer buffer;
+    private Page p;
     private int currentpos;
     private int boundary;
 
@@ -26,9 +24,8 @@ class LogIterator implements Iterator<byte[]> {
     public LogIterator(FileMgr fm, BlockId blk) {
         this.fm = fm;
         this.blk = blk;
-//        byte[] b = new byte[fm.blockSize()];
-//        p = new Page(b);
-        this.buffer = new Buffer(fm, null);
+        byte[] b = new byte[fm.blockSize()];
+        p = new Page(b);
         moveToBlock(blk);
     }
 
@@ -55,7 +52,7 @@ class LogIterator implements Iterator<byte[]> {
             blk = new BlockId(blk.fileName(), blk.number() - 1);
             moveToBlock(blk);
         }
-        byte[] rec = this.buffer.contents().getBytes(currentpos);
+        byte[] rec = p.getBytes(currentpos);
         currentpos += Integer.BYTES + rec.length;
         return rec;
     }
@@ -66,8 +63,8 @@ class LogIterator implements Iterator<byte[]> {
      * (i.e., the most recent one).
      */
     private void moveToBlock(BlockId blk) {
-        fm.read(blk, this.buffer.contents());
-        boundary = this.buffer.contents().getInt(0);
+        fm.read(blk, p);
+        boundary = p.getInt(0);
         currentpos = boundary;
     }
 }
