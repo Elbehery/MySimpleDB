@@ -2,6 +2,8 @@ package simpledb.log;
 
 import java.util.Iterator;
 
+import simpledb.buffer.Buffer;
+import simpledb.buffer.BufferMgr;
 import simpledb.file.*;
 
 /**
@@ -14,6 +16,7 @@ import simpledb.file.*;
  */
 public class LogMgr {
     private FileMgr fm;
+    private BufferMgr bm;
     private String logfile;
     private Page logpage;
     private BlockId currentblk;
@@ -28,18 +31,41 @@ public class LogMgr {
      * @param FileMgr the file manager
      * @param logfile the name of the log file
      */
-    public LogMgr(FileMgr fm, String logfile) {
+    public LogMgr(FileMgr fm, BufferMgr bm, String logfile) {
         this.fm = fm;
+        this.bm = bm;
         this.logfile = logfile;
-        byte[] b = new byte[fm.blockSize()];
-        logpage = new Page(b);
+        // ex 4.11 solution
         int logsize = fm.length(logfile);
-        if (logsize == 0)
-            currentblk = appendNewBlock();
-        else {
+        boolean flag = false;
+        if (logsize == 0) {
+            // create a new block to using FileMgr
+            // pin logfile's tail block to a Buffer using BufferMgr
+            currentblk = fm.append(logfile);
+            flag = true;
+        } else {
             currentblk = new BlockId(logfile, logsize - 1);
-            fm.read(currentblk, logpage);
         }
+
+        Buffer buffer = bm.pin(currentblk);
+        if (buffer == null) {
+            throw new RuntimeException("BufferMgr can not pin a buffer to the logfile tail block");
+        }
+        logpage = buffer.contents();
+        if (flag) {
+            logpage.setInt(0, fm.blockSize());
+        }
+
+
+//        byte[] b = new byte[fm.blockSize()];
+//        logpage = new Page(b);
+//        int logsize = fm.length(logfile);
+//        if (logsize == 0)
+//            currentblk = appendNewBlock();
+//        else {
+//            currentblk = new BlockId(logfile, logsize - 1);
+//            fm.read(currentblk, logpage);
+//        }
     }
 
     /**
