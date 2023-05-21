@@ -21,6 +21,7 @@ public class Buffer {
     private int pins = 0;
     private int txnum = -1;
     private int lsn = -1;
+    private long lastReplaced = 0L;
 
     public Buffer(FileMgr fm, LogMgr lm) {
         this.fm = fm;
@@ -74,6 +75,7 @@ public class Buffer {
         flush();
         blk = b;
         fm.read(blk, contents);
+        lastReplaced = System.nanoTime();
         pins = 0;
     }
 
@@ -100,5 +102,9 @@ public class Buffer {
      */
     void unpin() {
         pins--;
+    }
+
+    public long getLastReplaced() {
+        return lastReplaced;
     }
 }
