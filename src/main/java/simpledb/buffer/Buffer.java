@@ -21,6 +21,7 @@ public class Buffer {
     private int pins = 0;
     private int txnum = -1;
     private int lsn = -1;
+    private boolean referenced = true;
 
     public Buffer(FileMgr fm, LogMgr lm) {
         this.fm = fm;
@@ -92,6 +93,7 @@ public class Buffer {
      * Increase the buffer's pin count.
      */
     void pin() {
+        this.referenced = false;
         pins++;
     }
 
@@ -99,6 +101,15 @@ public class Buffer {
      * Decrease the buffer's pin count.
      */
     void unpin() {
+        this.referenced = true;
         pins--;
+    }
+
+    public boolean isReferenced() {
+        return referenced;
+    }
+
+    public void setReferenced(boolean referenced) {
+        this.referenced = referenced;
     }
 }

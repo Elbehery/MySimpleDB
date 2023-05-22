@@ -3,6 +3,9 @@ package simpledb.buffer;
 import simpledb.file.*;
 import simpledb.log.LogMgr;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Manages the pinning and unpinning of buffers to blocks.
  *
@@ -12,6 +15,7 @@ public class BufferMgr {
     private Buffer[] bufferpool;
     private int numAvailable;
     private static final long MAX_TIME = 10000; // 10 seconds
+    private int clockHead = -1;
 
     /**
      * Creates a buffer manager having the specified number
@@ -129,6 +133,21 @@ public class BufferMgr {
         for (Buffer buff : bufferpool)
             if (!buff.isPinned())
                 return buff;
+        return null;
+    }
+
+    private Buffer chooseUnpinnedBufferClockStrategy() {
+        this.clockHead = (clockHead + 1) % bufferpool.length;
+        for (int i = clockHead; i < bufferpool.length; i++) {
+            // only unpinned pages are considered for replacement
+            if (!bufferpool[i].isPinned()) {
+                if (bufferpool[i].isReferenced()) {
+                    bufferpool[i].setReferenced(false);
+                } else {
+                    return bufferpool[i];
+                }
+            }
+        }
         return null;
     }
 }
