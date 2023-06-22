@@ -78,16 +78,4 @@ public class SetIntRecord implements LogRecord {
         p.setInt(vpos, val);
         return lm.append(rec);
     }
-
-    public int getOffset() {
-        return offset;
-    }
-
-    public int getVal() {
-        return val;
-    }
-
-    public BlockId getBlk() {
-        return blk;
-    }
 }
