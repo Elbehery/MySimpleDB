@@ -91,6 +91,7 @@ public class Transaction {
      * @param blk a reference to the disk block
      */
     public void pin(BlockId blk) {
+        concurMgr.sLock(blk);
         mybuffers.pin(blk);
     }
 
@@ -116,7 +117,7 @@ public class Transaction {
      * @return the integer stored at that offset
      */
     public int getInt(BlockId blk, int offset) {
-        concurMgr.sLock(blk);
+//        concurMgr.sLock(blk);
         Buffer buff = mybuffers.getBuffer(blk);
         return buff.contents().getInt(offset);
     }
@@ -132,7 +133,7 @@ public class Transaction {
      * @return the string stored at that offset
      */
     public String getString(BlockId blk, int offset) {
-        concurMgr.sLock(blk);
+//        concurMgr.sLock(blk);
         Buffer buff = mybuffers.getBuffer(blk);
         return buff.contents().getString(offset);
     }
