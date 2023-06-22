@@ -36,6 +36,7 @@ public interface LogRecord {
      * @param txnum the id of the transaction that is performing the undo.
      */
     void undo(Transaction tx);
+    void redo(Transaction tx);
 
     /**
      * Interpret the bytes returned by the log iterator.
