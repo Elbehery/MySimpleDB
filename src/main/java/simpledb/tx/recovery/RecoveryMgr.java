@@ -123,12 +123,33 @@ public class RecoveryMgr {
         while (iter.hasNext()) {
             byte[] bytes = iter.next();
             LogRecord rec = LogRecord.createLogRecord(bytes);
+            if (rec.op() == START) {
+                continue;
+            }
             if (rec.op() == CHECKPOINT)
                 return;
             if (rec.op() == COMMIT || rec.op() == ROLLBACK)
                 finishedTxs.add(rec.txNumber());
-            else if (!finishedTxs.contains(rec.txNumber()))
+            else if (!finishedTxs.contains(rec.txNumber()) && !IsPersisted(tx, rec))
                 rec.undo(tx);
         }
     }
+
+    private boolean IsPersisted(Transaction tx, LogRecord record) {
+        switch (record.op()) {
+            case SETINT:
+                SetIntRecord intRec = (SetIntRecord) record;
+                int persistedInt = tx.getInt(intRec.getBlk(), intRec.getOffset());
+                if (persistedInt == intRec.getVal())
+                    return true;
+            case SETSTRING:
+                SetStringRecord stringRec = (SetStringRecord) record;
+                String persistedString = tx.getString(stringRec.getBlk(), stringRec.getOffset());
+                if (persistedString.equals(stringRec.getVal()))
+                    return true;
+            default:
+                return false;
+        }
+    }
 }
+

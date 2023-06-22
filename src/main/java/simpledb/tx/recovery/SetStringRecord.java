@@ -80,4 +80,16 @@ public class SetStringRecord implements LogRecord {
         p.setString(vpos, val);
         return lm.append(rec);
     }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public String getVal() {
+        return val;
+    }
+
+    public BlockId getBlk() {
+        return blk;
+    }
 }
