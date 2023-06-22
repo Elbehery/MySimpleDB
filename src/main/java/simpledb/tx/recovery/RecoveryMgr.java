@@ -131,41 +131,4 @@ public class RecoveryMgr {
                 rec.undo(tx);
         }
     }
-
-    private void undoRedoRecovery() {
-        Set<Integer> commitedTxs = new HashSet<>();
-        Set<Integer> rolledbackTxs = new HashSet<>();
-        LinkedList<LogRecord> records = new LinkedList<>();
-
-        Iterator<byte[]> iter = lm.iterator();
-
-        // undo phase
-        while (iter.hasNext()) {
-            byte[] bytes = iter.next();
-            LogRecord rec = LogRecord.createLogRecord(bytes);
-            if (rec.op() == START)
-                continue;
-            if (rec.op() == CHECKPOINT)
-                return;
-            if (rec.op() == COMMIT) {
-                commitedTxs.add(rec.txNumber());
-                continue;
-            }
-            if (rec.op() == ROLLBACK) {
-                rolledbackTxs.add(rec.txNumber());
-                continue;
-            }
-            // add update records to the list, newest first
-            records.addFirst(rec);
-            if (!commitedTxs.contains(rec.txNumber()) && !rolledbackTxs.contains(rec.txNumber()))
-                rec.undo(tx);
-        }
-
-        // redo phase
-        for (LogRecord rec : records){
-            if (commitedTxs.contains(rec.txNumber())){
-                rec.redo(tx);
-            }
-        }
-    }
 }

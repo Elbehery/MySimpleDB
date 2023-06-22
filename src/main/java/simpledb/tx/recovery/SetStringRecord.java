@@ -54,13 +54,6 @@ public class SetStringRecord implements LogRecord {
         tx.unpin(blk);
     }
 
-    @Override
-    public void redo(Transaction tx) {
-        tx.pin(blk);
-        tx.setString(blk, offset, val, false);
-        tx.unpin(blk);
-    }
-
     /**
      * A static method to write a setInt record to the log.
      * This log record contains the SETINT operator,
