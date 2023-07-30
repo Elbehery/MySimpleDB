@@ -20,7 +20,7 @@ public class RecordPage {
         this.tx = tx;
         this.blk = blk;
         this.layout = layout;
-        tx.pin(blk);
+//        tx.pin(blk);
     }
 
     /**
@@ -31,8 +31,11 @@ public class RecordPage {
      * @return the integer stored in that field
      */
     public int getInt(int slot, String fldname) {
+        tx.pin(blk);
         int fldpos = offset(slot) + layout.offset(fldname);
-        return tx.getInt(blk, fldpos);
+        int res = tx.getInt(blk, fldpos);
+        tx.unpin(blk);
+        return res;
     }
 
     /**
@@ -43,8 +46,11 @@ public class RecordPage {
      * @return the string stored in that field
      */
     public String getString(int slot, String fldname) {
+        tx.pin(blk);
         int fldpos = offset(slot) + layout.offset(fldname);
-        return tx.getString(blk, fldpos);
+        String res = tx.getString(blk, fldpos);
+        tx.unpin(blk);
+        return res;
     }
 
     /**

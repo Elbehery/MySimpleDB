@@ -66,8 +66,8 @@ public class TableScan implements UpdateScan {
     }
 
     public void close() {
-        if (rp != null)
-            tx.unpin(rp.block());
+//        if (rp != null)
+//            tx.unpin(rp.block());
     }
 
     // Methods that implement UpdateScan
