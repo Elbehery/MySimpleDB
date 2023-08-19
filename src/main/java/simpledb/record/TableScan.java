@@ -35,13 +35,6 @@ public class TableScan implements UpdateScan {
         moveToBlock(0);
     }
 
-    public void afterLast() {
-        // fetch the last block in the file
-        moveToBlock(tx.size(filename) - 1);
-        // position currentSlot to be after last slot in the last block (i.e. after last slot in the whole file)
-        currentslot = tx.blockSize() / layout.slotSize();
-    }
-
     public boolean next() {
         currentslot = rp.nextAfter(currentslot);
         while (currentslot < 0) {
@@ -49,18 +42,6 @@ public class TableScan implements UpdateScan {
                 return false;
             moveToBlock(rp.block().number() + 1);
             currentslot = rp.nextAfter(currentslot);
-        }
-        return true;
-    }
-
-    public boolean previous() {
-        currentslot = rp.nextBefore(currentslot);
-        while (currentslot < 0) {
-            if (atFirstBlock()) {
-                return false;
-            }
-            moveToBlock(rp.block().number() - 1);
-            currentslot = rp.nextBefore(currentslot)
         }
         return true;
     }
@@ -151,9 +132,5 @@ public class TableScan implements UpdateScan {
 
     private boolean atLastBlock() {
         return rp.block().number() == tx.size(filename) - 1;
-    }
-
-    private boolean atFirstBlock() {
-        return rp.block().number() == 0;
     }
 }
