@@ -1,5 +1,9 @@
 package simpledb.query;
 
+import jdk.javadoc.internal.doclets.formats.html.markup.Table;
+import simpledb.record.TableScan;
+import sun.tools.jconsole.Tab;
+
 import java.util.List;
 
 /**
@@ -30,8 +34,18 @@ public class ProjectScan implements Scan {
         s.beforeFirst();
     }
 
+    public void afterLast() {
+        TableScan ts = (TableScan) s;
+        ts.afterLast();
+    }
+
     public boolean next() {
         return s.next();
+    }
+
+    public boolean previous() {
+        TableScan ts = (TableScan) s;
+        return ts.previous();
     }
 
     public int getInt(String fldname) {
