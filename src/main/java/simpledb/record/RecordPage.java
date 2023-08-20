@@ -67,6 +67,9 @@ public class RecordPage {
      * @param val     the string value stored in that field
      */
     public void setString(int slot, String fldname, String val) {
+        if (Page.maxLength(val.length()) > Page.maxLength(this.layout.schema().length(fldname))) {
+            throw new RuntimeException(String.format("illegal string value, expected max string length to be '%d', but found '%d'", Page.maxLength(this.layout.schema().length(fldname)), Page.maxLength(val.length())));
+        }
         int fldpos = offset(slot) + layout.offset(fldname);
         tx.setString(blk, fldpos, val, true);
     }
