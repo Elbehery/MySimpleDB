@@ -11,7 +11,13 @@ public class Expression {
     private Constant val = null;
     private String fldname = null;
 
+    private boolean isNull = false;
+
     public Expression(Constant val) {
+        if (val.isNull()) {
+            this.isNull = true;
+            return;
+        }
         this.val = val;
     }
 
@@ -27,7 +33,12 @@ public class Expression {
      * @return the value of the expression, as a Constant
      */
     public Constant evaluate(Scan s) {
-        return (val != null) ? val : s.getVal(fldname);
+        if (isNull) {
+            return val;
+        } else {
+            Constant c = s.getVal(fldname);
+            return (c.isNull) ? val : c;
+        }
     }
 
     /**
@@ -47,6 +58,9 @@ public class Expression {
      * @return the expression as a constant
      */
     public Constant asConstant() {
+        if (isNull) {
+            return null;
+        }
         return val;
     }
 
