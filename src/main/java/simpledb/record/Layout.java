@@ -86,10 +86,8 @@ public class Layout {
         int fldtype = schema.type(fldname);
         if (fldtype == INTEGER)
             return Integer.BYTES;
-        else { // fldtype == VARCHAR
-            int paddedLength = schema.length(fldname) % 4;
-            return Page.maxLength(schema.length(fldname) + paddedLength);
-        }
+        else // fldtype == VARCHAR
+            return Page.maxLength(schema.length(fldname));
     }
 }
 
