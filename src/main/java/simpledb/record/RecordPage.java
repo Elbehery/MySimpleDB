@@ -56,7 +56,6 @@ public class RecordPage {
      */
     public void setInt(int slot, String fldname, int val) {
         int fldpos = offset(slot) + layout.offset(fldname);
-        setNonNull(slot, fldname);
         tx.setInt(blk, fldpos, val, true);
     }
 
@@ -69,7 +68,6 @@ public class RecordPage {
      */
     public void setString(int slot, String fldname, String val) {
         int fldpos = offset(slot) + layout.offset(fldname);
-        setNonNull(slot, fldname);
         tx.setString(blk, fldpos, val, true);
     }
 
@@ -88,7 +86,6 @@ public class RecordPage {
             tx.setInt(blk, offset(slot), EMPTY, false);
             Schema sch = layout.schema();
             for (String fldname : sch.fields()) {
-                setNonNull(slot, fldname);
                 int fldpos = offset(slot) + layout.offset(fldname);
                 if (sch.type(fldname) == INTEGER)
                     tx.setInt(blk, fldpos, 0, false);
@@ -114,55 +111,13 @@ public class RecordPage {
         return blk;
     }
 
-    public void setNull(int slot, String fldName) {
-        char[] flagAsString = parseSlotFlag(slot, fldName);
-        // setting the ith bit in the flag to 1, where i is the field index within the slot
-        int fieldIndex = this.layout.bitLocation(fldName);
-        flagAsString[fieldIndex] = 1;
-        // update the slot
-        int slotFlag = Integer.parseUnsignedInt(new String(flagAsString), 2);
-        setFlag(slot, slotFlag);
-    }
-
-    public void setNonNull(int slot, String fldName) {
-        char[] flagAsString = parseSlotFlag(slot, fldName);
-        // setting the ith bit in the flag to 1, where i is the field index within the slot
-        int fieldIndex = this.layout.bitLocation(fldName);
-        flagAsString[fieldIndex] = 0;
-        // update the slot
-        int slotFlag = Integer.parseUnsignedInt(new String(flagAsString), 2);
-        setFlag(slot, slotFlag);
-    }
-
-    public boolean isNull(int slot, String fldName) {
-        char[] flagAsString = parseSlotFlag(slot, fldName);
-        int fieldIndex = this.layout.bitLocation(fldName);
-        return flagAsString[fieldIndex] == 1;
-    }
-
     // Private auxiliary methods
-    private char[] parseSlotFlag(int slot, String fldName) {
-        int fieldIndex = this.layout.bitLocation(fldName);
-        if (fieldIndex == -1) {
-            throw new RuntimeException("max number of fields in a record is 31");
-        }
-        if (fieldIndex == 0) {
-            throw new RuntimeException("0th bit is used for empty/used flag");
-        }
-
-        int slotFlag = getFlag(slot);
-        return Integer.toBinaryString(slotFlag).toCharArray();
-    }
 
     /**
      * Set the record's empty/inuse flag.
      */
     private void setFlag(int slot, int flag) {
         tx.setInt(blk, offset(slot), flag, true);
-    }
-
-    private int getFlag(int slot) {
-        return tx.getInt(blk, offset(slot));
     }
 
     private int searchAfter(int slot, int flag) {
