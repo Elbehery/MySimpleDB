@@ -54,6 +54,10 @@ class TableMgr {
      * @param tx      the transaction creating the table
      */
     public void createTable(String tblname, Schema sch, Transaction tx) {
+        if (isTableExist(tblname, tx)){
+            return;
+        }
+
         Layout layout = new Layout(sch);
         // insert one record into tblcat
         TableScan tcat = new TableScan(tx, "tblcat", tcatLayout);
@@ -73,6 +77,18 @@ class TableMgr {
             fcat.setInt("offset", layout.offset(fldname));
         }
         fcat.close();
+    }
+
+    private boolean isTableExist(String tblname, Transaction tx) {
+        TableScan tableScan = new TableScan(tx, "tblcat", tcatLayout);
+        while (tableScan.next()) {
+            if (tableScan.getString("tblname").equals(tblname)) {
+                tableScan.close();
+                return true;
+            }
+        }
+        tableScan.close();
+        return false;
     }
 
     /**
