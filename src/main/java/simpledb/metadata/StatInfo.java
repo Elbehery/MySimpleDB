@@ -1,5 +1,8 @@
 package simpledb.metadata;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * A StatInfo object holds three pieces of
  * statistical information about a table:
@@ -11,6 +14,8 @@ package simpledb.metadata;
 public class StatInfo {
     private int numBlocks;
     private int numRecs;
+
+    private Map<String, Integer> distinctValues;
 
     /**
      * Create a StatInfo object.
@@ -24,6 +29,13 @@ public class StatInfo {
     public StatInfo(int numblocks, int numrecs) {
         this.numBlocks = numblocks;
         this.numRecs = numrecs;
+        this.distinctValues = new HashMap<>();
+    }
+
+    public StatInfo(int numblocks, int numrecs, Map<String, Integer> distinctValues) {
+        this.numBlocks = numblocks;
+        this.numRecs = numrecs;
+        this.distinctValues = distinctValues;
     }
 
     /**
@@ -54,6 +66,6 @@ public class StatInfo {
      * @return a guess as to the number of distinct field values
      */
     public int distinctValues(String fldname) {
-        return 1 + (numRecs / 3);
+        return (this.distinctValues.containsKey(fldname)) ? distinctValues.get(fldname) : -1;
     }
 }
