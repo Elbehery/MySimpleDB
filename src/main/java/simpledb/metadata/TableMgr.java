@@ -40,6 +40,13 @@ class TableMgr {
         fcatSchema.addIntField("offset");
         fcatLayout = new Layout(fcatSchema);
 
+        /*  ex 7.6 solution :-
+
+            When the database is new, the tblcat and fldcat tables are being created
+            since the system crashed while these tables are being created, then the transaction did not commit.
+            Recovery algorithm will undo these changes, and therefore, this Database does not exist.
+
+         */
         if (isNew) {
             createTable("tblcat", tcatSchema, tx);
             createTable("fldcat", fcatSchema, tx);
