@@ -92,9 +92,6 @@ class TableMgr {
                 break;
             }
         tcat.close();
-        if (size == -1) {
-            return null;
-        }
 
         Schema sch = new Schema();
         Map<String, Integer> offsets = new HashMap<String, Integer>();
