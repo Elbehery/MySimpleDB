@@ -6,6 +6,8 @@ import simpledb.buffer.*;
 import simpledb.tx.recovery.*;
 import simpledb.tx.concurrency.ConcurrencyMgr;
 
+import java.io.IOException;
+
 /**
  * Provide transaction management for clients,
  * ensuring that all transactions are serializable, recoverable,
@@ -223,6 +225,10 @@ public class Transaction {
 
     public int availableBuffs() {
         return bm.available();
+    }
+
+    public void deleteFile(String fileName) throws IOException {
+        this.fm.deleteFile(fileName);
     }
 
     private static synchronized int nextTxNumber() {

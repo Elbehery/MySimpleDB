@@ -1,5 +1,6 @@
 package simpledb.metadata;
 
+import java.io.IOException;
 import java.util.*;
 
 import simpledb.tx.Transaction;
@@ -73,6 +74,34 @@ class TableMgr {
             fcat.setInt("offset", layout.offset(fldname));
         }
         fcat.close();
+    }
+
+    public void dropTable(String tableName, Transaction tx) {
+        // remove from table catalog
+        TableScan tcat = new TableScan(tx, "tblcat", tcatLayout);
+        while (tcat.next()) {
+            if (tcat.getString("tblname").equals(tableName)) {
+                tcat.delete();
+                break;
+            }
+        }
+        tcat.close();
+
+        // remove from fields catalog
+        TableScan fcat = new TableScan(tx, "fldcat", fcatLayout);
+        while (fcat.next()) {
+            if (fcat.getString("tblname").equals(tableName)) {
+                fcat.delete();
+            }
+        }
+        fcat.close();
+
+        // remove the physical file using FileMgr
+        try {
+            tx.deleteFile(tableName + ".tbl");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
