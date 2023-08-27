@@ -1,9 +1,6 @@
 package simpledb.file;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class FileMgr {
@@ -76,12 +73,6 @@ public class FileMgr {
 
     public int blockSize() {
         return blocksize;
-    }
-
-    public void deleteFile(String fileName) throws IOException {
-        Path filePath = Paths.get(fileName);
-        Files.deleteIfExists(filePath);
-        openFiles.remove(fileName);
     }
 
     private RandomAccessFile getFile(String filename) throws IOException {
