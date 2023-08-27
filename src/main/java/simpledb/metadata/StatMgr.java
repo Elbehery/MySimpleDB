@@ -1,9 +1,7 @@
 package simpledb.metadata;
 
-import java.sql.Types;
 import java.util.*;
 
-import simpledb.query.Constant;
 import simpledb.tx.Transaction;
 import simpledb.record.*;
 
@@ -70,32 +68,14 @@ class StatMgr {
 
     private synchronized StatInfo calcTableStats(String tblname,
                                                  Layout layout, Transaction tx) {
-
-        Map<String, Set<Constant>> distinctFieldValues = new HashMap<>();
-
         int numRecs = 0;
         int numblocks = 0;
         TableScan ts = new TableScan(tx, tblname, layout);
         while (ts.next()) {
             numRecs++;
-            for (String fieldName : layout.schema().fields()) {
-                Constant val = ts.getVal(fieldName);
-                if (distinctFieldValues.containsKey(fieldName)) {
-                    distinctFieldValues.get(fieldName).add(val);
-                } else {
-                    Set<Constant> valuesSet = new HashSet<>();
-                    valuesSet.add(val);
-                    distinctFieldValues.put(fieldName, valuesSet);
-                }
-            }
+            numblocks = ts.getRid().blockNumber() + 1;
         }
-        numblocks = ts.getRid().blockNumber() + 1;
         ts.close();
-
-        Map<String, Integer> distinctValues = new HashMap<>();
-        for (String key : distinctFieldValues.keySet()) {
-            distinctValues.put(key, distinctFieldValues.get(key).size());
-        }
-        return new StatInfo(numblocks, numRecs, distinctValues);
+        return new StatInfo(numblocks, numRecs);
     }
 }
