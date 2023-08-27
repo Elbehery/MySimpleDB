@@ -108,23 +108,4 @@ class TableMgr {
         fcat.close();
         return new Layout(sch, offsets, size);
     }
-
-    public void removeField(String tblName, String fldName, Transaction tx) {
-        Layout tblLayout = getLayout(tblName, tx);
-        // sanity check
-        if (!tblLayout.schema().hasField(fldName)) {
-            throw new RuntimeException(String.format("table %s does not have field %s", tblName, fldName));
-        }
-
-        // omit the field from the table's schema in fldcat table
-        TableScan fcat = new TableScan(tx, "fldcat", fcatLayout);
-        while (fcat.next()) {
-            if (fcat.getString("tblname").equals(tblName) && fcat.getString("fldname").equals(fldName)) {
-                fcat.insert();
-                fcat.setString("fldname", "");
-                break;
-            }
-        }
-        fcat.close();
-    }
 }
