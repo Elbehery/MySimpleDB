@@ -2,7 +2,6 @@ package simpledb.file;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.*;
-import java.util.Date;
 
 public class Page {
     private ByteBuffer bb;
@@ -48,32 +47,6 @@ public class Page {
     public void setString(int offset, String s) {
         byte[] b = s.getBytes(CHARSET);
         setBytes(offset, b);
-    }
-
-    public synchronized void setShort(int offset, short val) {
-        bb.putShort(offset, val);
-    }
-
-    public synchronized short getShort(int offset) {
-        return bb.getShort(offset);
-    }
-
-    public synchronized boolean getBoolean(int offset) {
-        byte b = bb.get(offset);
-        return b == 1 ? true : false;
-    }
-
-    public synchronized void setBoolean(int offset, boolean val) {
-        byte b = val ? (byte) 1 : 0;
-        bb.put(offset, b);
-    }
-
-    public synchronized Date getDate(int offset) {
-        return new Date(bb.getLong(offset));
-    }
-
-    public synchronized void setDate(int offset, Date val) {
-        bb.putLong(offset, val.getTime());
     }
 
     public static int maxLength(int strlen) {

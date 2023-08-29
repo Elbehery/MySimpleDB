@@ -5,8 +5,6 @@ import static java.sql.Types.INTEGER;
 import simpledb.file.*;
 import simpledb.tx.Transaction;
 
-import java.util.Date;
-
 /**
  * Store a record at a given location in a block.
  *
@@ -49,21 +47,6 @@ public class RecordPage {
         return tx.getString(blk, fldpos);
     }
 
-    public Date getDate(int slot, String fldname) {
-        int fldpos = offset(slot) + layout.offset(fldname);
-        return tx.getDate(blk, fldpos);
-    }
-
-    public boolean getBoolean(int slot, String fldname) {
-        int fldpos = offset(slot) + layout.offset(fldname);
-        return tx.getBoolean(blk, fldpos);
-    }
-
-    public short getShort(int slot, String fldname) {
-        int fldpos = offset(slot) + layout.offset(fldname);
-        return tx.getShort(blk, fldpos);
-    }
-
     /**
      * Store an integer at the specified field
      * of the specified slot.
@@ -86,21 +69,6 @@ public class RecordPage {
     public void setString(int slot, String fldname, String val) {
         int fldpos = offset(slot) + layout.offset(fldname);
         tx.setString(blk, fldpos, val, true);
-    }
-
-    public void setShort(int slot, String fldname, short val) {
-        int fldpos = offset(slot) + layout.offset(fldname);
-        tx.setShort(blk, fldpos, val, true);
-    }
-
-    public void setDate(int slot, String fldname, Date val) {
-        int fldpos = offset(slot) + layout.offset(fldname);
-        tx.setDate(blk, fldpos, val, true);
-    }
-
-    public void setBoolean(int slot, String fldname, boolean val) {
-        int fldpos = offset(slot) + layout.offset(fldname);
-        tx.setBoolean(blk, fldpos, val, true);
     }
 
     public void delete(int slot) {

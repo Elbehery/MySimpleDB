@@ -1,6 +1,5 @@
 package simpledb.query;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -52,30 +51,6 @@ public class ProjectScan implements Scan {
     public Constant getVal(String fldname) {
         if (hasField(fldname))
             return s.getVal(fldname);
-        else
-            throw new RuntimeException("field " + fldname + " not found.");
-    }
-
-    @Override
-    public short getShort(String fldname) {
-        if (s.hasField(fldname))
-            return s.getShort(fldname);
-        else
-            throw new RuntimeException("field " + fldname + " not found.");
-    }
-
-    @Override
-    public boolean getBoolean(String fldname) {
-        if (s.hasField(fldname))
-            return s.getBoolean(fldname);
-        else
-            throw new RuntimeException("field " + fldname + " not found.");
-    }
-
-    @Override
-    public Date getDate(String fldname) {
-        if (s.hasField(fldname))
-            return s.getDate(fldname);
         else
             throw new RuntimeException("field " + fldname + " not found.");
     }

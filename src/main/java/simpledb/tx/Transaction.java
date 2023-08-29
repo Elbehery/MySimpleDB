@@ -1,13 +1,10 @@
 package simpledb.tx;
 
-import org.graalvm.compiler.nodes.cfg.Block;
 import simpledb.file.*;
 import simpledb.log.LogMgr;
 import simpledb.buffer.*;
 import simpledb.tx.recovery.*;
 import simpledb.tx.concurrency.ConcurrencyMgr;
-
-import java.util.Date;
 
 /**
  * Provide transaction management for clients,
@@ -140,24 +137,6 @@ public class Transaction {
         return buff.contents().getString(offset);
     }
 
-    public Boolean getBoolean(BlockId blk, int offset) {
-        concurMgr.sLock(blk);
-        Buffer buff = mybuffers.getBuffer(blk);
-        return buff.contents().getBoolean(offset);
-    }
-
-    public Date getDate(BlockId blk, int offset) {
-        concurMgr.sLock(blk);
-        Buffer buff = mybuffers.getBuffer(blk);
-        return buff.contents().getDate(offset);
-    }
-
-    public Short getShort(BlockId blk, int offset) {
-        concurMgr.sLock(blk);
-        Buffer buff = mybuffers.getBuffer(blk);
-        return buff.contents().getShort(offset);
-    }
-
     /**
      * Store an integer at the specified offset
      * of the specified block.
@@ -205,36 +184,6 @@ public class Transaction {
             lsn = recoveryMgr.setString(buff, offset, val);
         Page p = buff.contents();
         p.setString(offset, val);
-        buff.setModified(txnum, lsn);
-    }
-
-    public void setShort(BlockId blk, int offset, short val, boolean okToLog) {
-        concurMgr.xLock(blk);
-        Buffer buff = mybuffers.getBuffer(blk);
-        int lsn = -1;
-        // should log
-        Page p = buff.contents();
-        p.setShort(offset, val);
-        buff.setModified(txnum, lsn);
-    }
-
-    public void setBoolean(BlockId blk, int offset, boolean val, boolean okToLog) {
-        concurMgr.xLock(blk);
-        Buffer buff = mybuffers.getBuffer(blk);
-        int lsn = -1;
-        // should log
-        Page p = buff.contents();
-        p.setBoolean(offset, val);
-        buff.setModified(txnum, lsn);
-    }
-
-    public void setDate(BlockId blk, int offset, Date val, boolean okToLog) {
-        concurMgr.xLock(blk);
-        Buffer buff = mybuffers.getBuffer(blk);
-        int lsn = -1;
-        // should log
-        Page p = buff.contents();
-        p.setDate(offset, val);
         buff.setModified(txnum, lsn);
     }
 

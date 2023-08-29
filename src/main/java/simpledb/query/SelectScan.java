@@ -2,8 +2,6 @@ package simpledb.query;
 
 import simpledb.record.*;
 
-import java.util.Date;
-
 /**
  * The scan class corresponding to the <i>select</i> relational
  * algebra operator.
@@ -52,39 +50,6 @@ public class SelectScan implements UpdateScan {
 
     public Constant getVal(String fldname) {
         return s.getVal(fldname);
-    }
-
-    @Override
-    public short getShort(String fldname) {
-        return s.getShort(fldname);
-    }
-
-    @Override
-    public boolean getBoolean(String fldname) {
-        return s.getBoolean(fldname);
-    }
-
-    @Override
-    public Date getDate(String fldname) {
-        return s.getDate(fldname);
-    }
-
-    @Override
-    public void setBoolean(String fldname, Boolean val) {
-        UpdateScan updateScan = (UpdateScan) s;
-        updateScan.setBoolean(fldname, val);
-    }
-
-    @Override
-    public void setShort(String fldname, short val) {
-        UpdateScan updateScan = (UpdateScan) s;
-        updateScan.setShort(fldname, val);
-    }
-
-    @Override
-    public void setDate(String fldname, Date val) {
-        UpdateScan updateScan = (UpdateScan) s;
-        updateScan.setDate(fldname, val);
     }
 
     public boolean hasField(String fldname) {
