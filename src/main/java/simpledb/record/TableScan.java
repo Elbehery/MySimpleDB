@@ -47,20 +47,14 @@ public class TableScan implements UpdateScan {
     }
 
     public int getInt(String fldname) {
-        if (!hasField(fldname))
-            throw new RuntimeException("field " + fldname + " not found.");
         return rp.getInt(currentslot, fldname);
     }
 
     public String getString(String fldname) {
-        if (!hasField(fldname))
-            throw new RuntimeException("field " + fldname + " not found.");
         return rp.getString(currentslot, fldname);
     }
 
     public Constant getVal(String fldname) {
-        if (!hasField(fldname))
-            throw new RuntimeException("field " + fldname + " not found.");
         if (layout.schema().type(fldname) == INTEGER)
             return new Constant(getInt(fldname));
         else
