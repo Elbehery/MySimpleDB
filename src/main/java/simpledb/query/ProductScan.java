@@ -1,5 +1,7 @@
 package simpledb.query;
 
+import java.util.Date;
+
 /**
  * The scan class corresponding to the <i>product</i> relational
  * algebra operator.
@@ -93,6 +95,30 @@ public class ProductScan implements Scan {
             return s1.getVal(fldname);
         else
             return s2.getVal(fldname);
+    }
+
+    @Override
+    public short getShort(String fldname) {
+        if (s1.hasField(fldname))
+            return s1.getShort(fldname);
+        else
+            return s2.getShort(fldname);
+    }
+
+    @Override
+    public boolean getBoolean(String fldname) {
+        if (s1.hasField(fldname))
+            return s1.getBoolean(fldname);
+        else
+            return s2.getBoolean(fldname);
+    }
+
+    @Override
+    public Date getDate(String fldname) {
+        if (s1.hasField(fldname))
+            return s1.getDate(fldname);
+        else
+            return s2.getDate(fldname);
     }
 
     /**

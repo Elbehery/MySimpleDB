@@ -1,5 +1,7 @@
 package simpledb.query;
 
+import java.util.Date;
+
 /**
  * The class that denotes values stored in the database.
  *
@@ -9,6 +11,12 @@ public class Constant implements Comparable<Constant> {
     private Integer ival = null;
     private String sval = null;
 
+    private Short shortVal = null;
+
+    private Boolean boolVal = null;
+
+    private Date dateVal = null;
+
     public Constant(Integer ival) {
         this.ival = ival;
     }
@@ -17,12 +25,36 @@ public class Constant implements Comparable<Constant> {
         this.sval = sval;
     }
 
+    public Constant(Short shortVal) {
+        this.shortVal = shortVal;
+    }
+
+    public Constant(Boolean boolVal) {
+        this.boolVal = boolVal;
+    }
+
+    public Constant(Date dateVal) {
+        this.dateVal = dateVal;
+    }
+
     public int asInt() {
         return ival;
     }
 
     public String asString() {
         return sval;
+    }
+
+    public short asShort() {
+        return shortVal;
+    }
+
+    public Date asDate() {
+        return dateVal;
+    }
+
+    public Boolean asBoolean() {
+        return boolVal;
     }
 
     public boolean equals(Object obj) {
