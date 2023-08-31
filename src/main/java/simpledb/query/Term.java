@@ -11,8 +11,6 @@ import simpledb.record.*;
 public class Term {
     private Expression lhs, rhs;
 
-    private String op;
-
     /**
      * Create a new term that compares two expressions
      * for equality.
@@ -23,14 +21,6 @@ public class Term {
     public Term(Expression lhs, Expression rhs) {
         this.lhs = lhs;
         this.rhs = rhs;
-    }
-
-    public Term(Expression lhs, Expression rhs, String op) {
-        if (!op.equals("<") && !op.equals(">")) {
-            throw new RuntimeException(String.format("unsupported comparison operatos %s", op));
-        }
-        this.op = op;
-        new Term(lhs, rhs);
     }
 
     /**
@@ -44,12 +34,7 @@ public class Term {
     public boolean isSatisfied(Scan s) {
         Constant lhsval = lhs.evaluate(s);
         Constant rhsval = rhs.evaluate(s);
-        if (this.op == null)
-            return rhsval.equals(lhsval);
-        else if (this.op.equals("<"))
-            return rhsval.compareTo(lhsval) < 0;
-        else
-            return rhsval.compareTo(lhsval) > 0;
+        return rhsval.equals(lhsval);
     }
 
     /**
