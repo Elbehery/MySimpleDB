@@ -11,18 +11,12 @@ public class Expression {
     private Constant val = null;
     private String fldname = null;
 
-
     public Expression(Constant val) {
         this.val = val;
     }
 
     public Expression(String fldname) {
         this.fldname = fldname;
-    }
-
-    public Expression(int lhs, int rhs, String operator) {
-        IntegerExpression exp = new IntegerExpression(lhs, rhs, operator);
-        this.val = new Constant(exp.evaluate());
     }
 
     /**
@@ -80,31 +74,5 @@ public class Expression {
 
     public String toString() {
         return (val != null) ? val.toString() : fldname;
-    }
-
-    private class IntegerExpression {
-        int lhs, rhs;
-        String operator;
-
-        private IntegerExpression(int lhs, int rhs, String operator) {
-            this.lhs = lhs;
-            this.rhs = rhs;
-            this.operator = operator;
-        }
-
-        private int evaluate() {
-            switch (this.operator) {
-                case "+":
-                    return lhs + rhs;
-                case "-":
-                    return lhs - rhs;
-                case "/":
-                    return (lhs > rhs) ? (lhs / rhs) : rhs / lhs;
-                case "*":
-                    return lhs * rhs;
-                default:
-                    throw new RuntimeException(String.format("illegal arithmetic operator %s", operator));
-            }
-        }
     }
 }
