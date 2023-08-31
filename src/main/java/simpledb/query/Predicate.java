@@ -13,6 +13,10 @@ import simpledb.record.*;
 public class Predicate {
     private List<Term> terms = new ArrayList<Term>();
 
+    private List<Term> orTerms = new LinkedList<>();
+
+    private List<Term> notTerms = new LinkedList<>();
+
     /**
      * Create an empty predicate, corresponding to "true".
      */
@@ -38,6 +42,14 @@ public class Predicate {
         terms.addAll(pred.terms);
     }
 
+    public void orWith(Predicate pred) {
+        this.orTerms.addAll(pred.terms);
+    }
+
+    public void notWith(Predicate predicate) {
+        this.notTerms.addAll(predicate.terms);
+    }
+
     /**
      * Returns true if the predicate evaluates to true
      * with respect to the specified scan.
@@ -49,6 +61,24 @@ public class Predicate {
         for (Term t : terms)
             if (!t.isSatisfied(s))
                 return false;
+        // if any orTerm is satisfied, pass
+        // only if all orTerms fails, return false;
+        boolean anyTrue = false;
+        for (Term t : orTerms) {
+            if (t.isSatisfied(s)) {
+                anyTrue = true;
+                break;
+            }
+        }
+        if (!anyTrue) {
+            return false;
+        }
+        // fail if any notTerm satisfy
+        for (Term t : notTerms) {
+            if (t.isSatisfied(s)) {
+                return false;
+            }
+        }
         return true;
     }
 
