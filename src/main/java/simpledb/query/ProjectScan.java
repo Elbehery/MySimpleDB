@@ -1,7 +1,5 @@
 package simpledb.query;
 
-import simpledb.record.RID;
-
 import java.util.List;
 
 /**
@@ -12,7 +10,7 @@ import java.util.List;
  *
  * @author Edward Sciore
  */
-public class ProjectScan implements UpdateScan {
+public class ProjectScan implements Scan {
     private Scan s;
     private List<String> fieldlist;
 
@@ -63,58 +61,5 @@ public class ProjectScan implements UpdateScan {
 
     public void close() {
         s.close();
-    }
-
-    // UpdateScan methods
-
-    @Override
-    public void setVal(String fldname, Constant val) {
-        if (hasField(fldname)) {
-            UpdateScan updateScan = (UpdateScan) s;
-            updateScan.setVal(fldname, val);
-        } else
-            throw new RuntimeException("field " + fldname + " not found.");
-    }
-
-    @Override
-    public void setInt(String fldname, int val) {
-        if (hasField(fldname)) {
-            UpdateScan updateScan = (UpdateScan) s;
-            updateScan.setInt(fldname, val);
-        } else
-            throw new RuntimeException("field " + fldname + " not found.");
-    }
-
-    @Override
-    public void setString(String fldname, String val) {
-        if (hasField(fldname)) {
-            UpdateScan updateScan = (UpdateScan) s;
-            updateScan.setString(fldname, val);
-        } else
-            throw new RuntimeException("field " + fldname + " not found.");
-    }
-
-    @Override
-    public void insert() {
-        UpdateScan us = (UpdateScan) s;
-        us.insert();
-    }
-
-    @Override
-    public void delete() {
-        UpdateScan us = (UpdateScan) s;
-        us.delete();
-    }
-
-    @Override
-    public RID getRid() {
-        UpdateScan us = (UpdateScan) s;
-        return us.getRid();
-    }
-
-    @Override
-    public void moveToRid(RID rid) {
-        UpdateScan us = (UpdateScan) s;
-        us.moveToRid(rid);
     }
 }
