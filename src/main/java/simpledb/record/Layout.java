@@ -82,21 +82,6 @@ public class Layout {
         return slotsize;
     }
 
-    public int bitLocation(String fldname) {
-        int idx = 0;
-        for (String fld : this.schema.fields()) {
-            idx++;
-            if (fldname.equals(fld)) {
-                return idx;
-            }
-            // invariant : schema fields < 32
-            if (idx >= 31) {
-                break;
-            }
-        }
-        return -1;
-    }
-
     private int lengthInBytes(String fldname) {
         int fldtype = schema.type(fldname);
         if (fldtype == INTEGER)

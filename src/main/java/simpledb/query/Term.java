@@ -34,9 +34,6 @@ public class Term {
     public boolean isSatisfied(Scan s) {
         Constant lhsval = lhs.evaluate(s);
         Constant rhsval = rhs.evaluate(s);
-        if (lhsval == null || rhsval == null) {
-            return false;
-        }
         return rhsval.equals(lhsval);
     }
 

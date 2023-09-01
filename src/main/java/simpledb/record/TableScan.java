@@ -55,10 +55,6 @@ public class TableScan implements UpdateScan {
     }
 
     public Constant getVal(String fldname) {
-        boolean isNull = isNullField(fldname);
-        if (isNull)
-            return new Constant(true);
-
         if (layout.schema().type(fldname) == INTEGER)
             return new Constant(getInt(fldname));
         else
@@ -85,11 +81,6 @@ public class TableScan implements UpdateScan {
     }
 
     public void setVal(String fldname, Constant val) {
-        if (val.isNull()) {
-            rp.setNull(currentslot, fldname);
-            return;
-        }
-        
         if (layout.schema().type(fldname) == INTEGER)
             setInt(fldname, val.asInt());
         else
@@ -141,9 +132,5 @@ public class TableScan implements UpdateScan {
 
     private boolean atLastBlock() {
         return rp.block().number() == tx.size(filename) - 1;
-    }
-
-    private boolean isNullField(String fldname) {
-        return rp.isNull(currentslot, fldname);
     }
 }
