@@ -1,9 +1,5 @@
 package simpledb.query;
 
-import jdk.javadoc.internal.doclets.formats.html.markup.Table;
-import simpledb.record.TableScan;
-import sun.tools.jconsole.Tab;
-
 /**
  * The scan class corresponding to the <i>product</i> relational
  * algebra operator.
@@ -39,15 +35,6 @@ public class ProductScan implements Scan {
         s2.beforeFirst();
     }
 
-    public void afterLast() {
-        TableScan ts1 = (TableScan) s1;
-        TableScan ts2 = (TableScan) s2;
-
-        ts1.afterLast();
-        ts1.previous();
-        ts2.afterLast();
-    }
-
     /**
      * Move the scan to the next record.
      * The method moves to the next RHS record, if possible.
@@ -63,18 +50,6 @@ public class ProductScan implements Scan {
         else {
             s2.beforeFirst();
             return s2.next() && s1.next();
-        }
-    }
-
-    public boolean previous() {
-        TableScan ts1 = (TableScan) s1;
-        TableScan ts2 = (TableScan) s2;
-
-        if (ts2.previous()) {
-            return true;
-        } else {
-            ts2.afterLast();
-            return ts2.previous() && ts1.previous();
         }
     }
 

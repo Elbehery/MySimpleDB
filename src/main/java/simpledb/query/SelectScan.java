@@ -1,7 +1,6 @@
 package simpledb.query;
 
 import simpledb.record.*;
-import sun.tools.jconsole.Tab;
 
 /**
  * The scan class corresponding to the <i>select</i> relational
@@ -33,25 +32,10 @@ public class SelectScan implements UpdateScan {
         s.beforeFirst();
     }
 
-    public void afterLast() {
-        TableScan ts = (TableScan) s;
-        ts.afterLast();
-    }
-
     public boolean next() {
         while (s.next()) {
             if (pred.isSatisfied(s))
                 return true;
-        }
-        return false;
-    }
-
-    public boolean previous() {
-        TableScan ts = (TableScan) s;
-        while (ts.previous()) {
-            if (pred.isSatisfied(ts)) {
-                return true;
-            }
         }
         return false;
     }
