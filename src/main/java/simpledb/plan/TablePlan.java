@@ -78,4 +78,8 @@ public class TablePlan implements Plan {
     public Schema schema() {
         return layout.schema();
     }
+
+    public void setLayout(Layout layout) {
+        this.layout = layout;
+    }
 }
