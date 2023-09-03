@@ -41,4 +41,6 @@ public class Constant implements Comparable<Constant> {
     public String toString() {
         return (ival != null) ? ival.toString() : sval.toString();
     }
+
+
 }
