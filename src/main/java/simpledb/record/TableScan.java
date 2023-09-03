@@ -113,14 +113,6 @@ public class TableScan implements UpdateScan {
         return new RID(rp.block().number(), currentslot);
     }
 
-    public Layout getLayout() {
-        return layout;
-    }
-
-    public void setLayout(Layout layout) {
-        this.layout = layout;
-    }
-
     // Private auxiliary methods
 
     private void moveToBlock(int blknum) {
