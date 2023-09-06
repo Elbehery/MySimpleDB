@@ -46,9 +46,9 @@ public class Parser {
 
     public Predicate predicate() {
         Predicate pred = new Predicate(term());
-        while (lex.matchKeyword("and")) {
+        if (lex.matchKeyword("and")) {
             lex.eatKeyword("and");
-            pred.conjoinWith(new Predicate(term()));
+            pred.conjoinWith(predicate());
         }
         return pred;
     }
@@ -71,9 +71,9 @@ public class Parser {
     private List<String> selectList() {
         List<String> L = new ArrayList<String>();
         L.add(field());
-        while (lex.matchDelim(',')) {
+        if (lex.matchDelim(',')) {
             lex.eatDelim(',');
-            L.add(field());
+            L.addAll(selectList());
         }
         return L;
     }
@@ -81,9 +81,9 @@ public class Parser {
     private Collection<String> tableList() {
         Collection<String> L = new ArrayList<String>();
         L.add(lex.eatId());
-        while (lex.matchDelim(',')){
+        if (lex.matchDelim(',')) {
             lex.eatDelim(',');
-            L.add(field());
+            L.addAll(tableList());
         }
         return L;
     }
@@ -144,9 +144,9 @@ public class Parser {
     private List<String> fieldList() {
         List<String> L = new ArrayList<String>();
         L.add(field());
-        while (lex.matchDelim(',')){
+        if (lex.matchDelim(',')) {
             lex.eatDelim(',');
-            L.add(field());
+            L.addAll(fieldList());
         }
         return L;
     }
@@ -154,9 +154,9 @@ public class Parser {
     private List<Constant> constList() {
         List<Constant> L = new ArrayList<Constant>();
         L.add(constant());
-        while (lex.matchDelim(',')){
+        if (lex.matchDelim(',')) {
             lex.eatDelim(',');
-            L.add(constant());
+            L.addAll(constList());
         }
         return L;
     }
@@ -191,10 +191,10 @@ public class Parser {
 
     private Schema fieldDefs() {
         Schema schema = fieldDef();
-        while (lex.matchDelim(',')){
+        if (lex.matchDelim(',')) {
             lex.eatDelim(',');
-            Schema schema1 = fieldDef();
-            schema.addAll(schema1);
+            Schema schema2 = fieldDefs();
+            schema.addAll(schema2);
         }
         return schema;
     }
