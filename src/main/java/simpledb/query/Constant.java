@@ -25,14 +25,6 @@ public class Constant implements Comparable<Constant> {
         return sval;
     }
 
-    public boolean isInt() {
-        return ival != null;
-    }
-
-    public boolean isString() {
-        return sval != null;
-    }
-
     public boolean equals(Object obj) {
         Constant c = (Constant) obj;
         return (ival != null) ? ival.equals(c.ival) : sval.equals(c.sval);
