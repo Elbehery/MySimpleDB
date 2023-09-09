@@ -1,11 +1,7 @@
 package simpledb.plan;
 
-import simpledb.metadata.MetadataMgr;
-import simpledb.record.Layout;
 import simpledb.tx.Transaction;
 import simpledb.parse.*;
-
-import java.util.*;
 
 /**
  * The object that executes SQL statements.
@@ -67,38 +63,10 @@ public class Planner {
     }
 
     // SimpleDB does not verify queries, although it should.
-    private void verifyQuery(QueryData data, Transaction tx) {
-        BasicUpdatePlanner basicUpdatePlanner = (BasicUpdatePlanner) this.uplanner;
-        MetadataMgr mdm = basicUpdatePlanner.getMdm();
-        Collection<String> tables = data.tables();
-        List<String> fields = data.fields();
-        verifyFields(mdm, tables, fields, tx);
+    private void verifyQuery(QueryData data) {
     }
 
     // SimpleDB does not verify updates, although it should.
-    private void verifyUpdate(Object data, Transaction tx) {
-    }
-
-    private void verifyFields(MetadataMgr mdm, Collection<String> tables, List<String> fields, Transaction tx) {
-        Set<String> fieldSet = new HashSet<>();
-
-        for (String tbl : tables) {
-            Layout layout = mdm.getLayout(tbl, tx);
-            if (layout == null)
-                throw new BadSyntaxException();
-
-            for (String fld : fields) {
-                if (layout.schema().hasField(fld)) {
-                    // assert no duplicate field names among different tables
-                    if (fieldSet.contains(fld)) {
-                        throw new BadSyntaxException();
-                    }
-                    fieldSet.add(fld);
-                }
-            }
-        }
-        if (fieldSet.size() != fields.size()) {
-            throw new BadSyntaxException();
-        }
+    private void verifyUpdate(Object data) {
     }
 }
