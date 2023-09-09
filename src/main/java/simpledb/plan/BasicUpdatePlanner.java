@@ -2,6 +2,7 @@ package simpledb.plan;
 
 import java.util.Iterator;
 
+import simpledb.record.Layout;
 import simpledb.tx.Transaction;
 import simpledb.parse.*;
 import simpledb.query.*;
@@ -47,6 +48,7 @@ public class BasicUpdatePlanner implements UpdatePlanner {
     }
 
     public int executeInsert(InsertData data, Transaction tx) {
+        verifyInsert(data, tx);
         Plan p = new TablePlan(tx, data.tableName(), mdm);
         UpdateScan us = (UpdateScan) p.open();
         us.insert();
@@ -72,5 +74,22 @@ public class BasicUpdatePlanner implements UpdatePlanner {
     public int executeCreateIndex(CreateIndexData data, Transaction tx) {
         mdm.createIndex(data.indexName(), data.tableName(), data.fieldName(), tx);
         return 0;
+    }
+
+    private void verifyInsert(InsertData data, Transaction tx) {
+        if (data.vals().size() != data.fields().size())
+            throw new BadSyntaxException();
+
+        Layout layout = mdm.getLayout(data.tableName(), tx);
+        int idx = -1;
+        for (String fld : data.fields()) {
+            idx++;
+            if (layout.schema().type(fld) == 12) {
+                String val = data.vals().get(idx).asString();
+                if (val.length() > layout.schema().length(fld)) {
+                    throw new BadSyntaxException();
+                }
+            }
+        }
     }
 }
