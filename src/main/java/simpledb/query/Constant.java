@@ -21,14 +21,6 @@ public class Constant implements Comparable<Constant> {
         return ival;
     }
 
-    public boolean isInt() {
-        return ival != null;
-    }
-
-    public boolean isString() {
-        return sval != null;
-    }
-
     public String asString() {
         return sval;
     }

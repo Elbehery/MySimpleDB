@@ -1,16 +1,7 @@
 package simpledb.plan;
 
-import simpledb.metadata.MetadataMgr;
-import simpledb.query.Expression;
-import simpledb.query.Predicate;
-import simpledb.query.Term;
-import simpledb.record.Layout;
 import simpledb.tx.Transaction;
 import simpledb.parse.*;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * The object that executes SQL statements.
@@ -36,7 +27,7 @@ public class Planner {
     public Plan createQueryPlan(String qry, Transaction tx) {
         Parser parser = new Parser(qry);
         QueryData data = parser.query();
-        verifyQuery(data, tx);
+        verifyQuery(data);
         return qplanner.createPlan(data, tx);
     }
 
@@ -72,72 +63,10 @@ public class Planner {
     }
 
     // SimpleDB does not verify queries, although it should.
-    private void verifyQuery(QueryData data, Transaction tx) {
-        BasicUpdatePlanner basicUpdatePlanner = (BasicUpdatePlanner) this.uplanner;
-        MetadataMgr mdm = basicUpdatePlanner.getMdm();
-        List<Layout> tableLayouts = new LinkedList<>();
-
-        for (String tblname : data.tables()) {
-            Layout layout = mdm.getLayout(tblname, tx);
-            tableLayouts.add(layout);
-        }
-        verifyPredicate(tableLayouts, data.pred());
+    private void verifyQuery(QueryData data) {
     }
 
     // SimpleDB does not verify updates, although it should.
     private void verifyUpdate(Object data) {
-    }
-
-    private void verifyPredicate(List<Layout> tableLayouts, Predicate predicate) {
-        List<Term> terms = predicate.getTerms();
-
-        for (Term term : terms) {
-            Expression lhs = term.getLhs();
-            Expression rhs = term.getRhs();
-
-            if (lhs.isFieldName() && rhs.isFieldName()) {
-                int lhsType = getFieldType(tableLayouts, lhs.asFieldName());
-                int rhsType = getFieldType(tableLayouts, rhs.asFieldName());
-
-                if (lhsType == -1 || rhsType == -1 || lhsType != rhsType) {
-                    throw new BadSyntaxException();
-                }
-
-            } else if (lhs.isFieldName() && rhs.isConstant()) {
-                int lhsType = getFieldType(tableLayouts, lhs.asFieldName());
-                if (lhsType == -1)
-                    throw new BadSyntaxException();
-
-                if (lhsType == 4 && !rhs.asConstant().isInt())
-                    throw new BadSyntaxException();
-
-                if (lhsType == 12 && !rhs.asConstant().isString())
-                    throw new BadSyntaxException();
-
-            } else if (lhs.isConstant() && rhs.isFieldName()) {
-                int rhsType = getFieldType(tableLayouts, rhs.asFieldName());
-                if (rhsType == -1)
-                    throw new BadSyntaxException();
-
-                if (rhsType == 4 && !lhs.asConstant().isInt())
-                    throw new BadSyntaxException();
-
-                if (rhsType == 12 && !lhs.asConstant().isString())
-                    throw new BadSyntaxException();
-
-            } else if (lhs.isConstant() && rhs.isConstant()) {
-                if (!lhs.asConstant().equals(rhs.asConstant()))
-                    throw new BadSyntaxException();
-            }
-        }
-    }
-
-    private int getFieldType(List<Layout> tablesLayout, String fieldName) {
-        for (Layout layout : tablesLayout) {
-            if (layout.schema().hasField(fieldName)) {
-                return layout.schema().type(fieldName);
-            }
-        }
-        return -1;
     }
 }

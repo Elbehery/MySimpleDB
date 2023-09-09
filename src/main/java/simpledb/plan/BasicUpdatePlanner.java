@@ -73,8 +73,4 @@ public class BasicUpdatePlanner implements UpdatePlanner {
         mdm.createIndex(data.indexName(), data.tableName(), data.fieldName(), tx);
         return 0;
     }
-
-    public MetadataMgr getMdm() {
-        return mdm;
-    }
 }

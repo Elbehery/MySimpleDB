@@ -127,12 +127,4 @@ public class Term {
     public String toString() {
         return lhs.toString() + "=" + rhs.toString();
     }
-
-    public Expression getLhs() {
-        return lhs;
-    }
-
-    public Expression getRhs() {
-        return rhs;
-    }
 }
