@@ -2,7 +2,6 @@ package simpledb.plan;
 
 import java.util.*;
 
-import simpledb.query.Expression;
 import simpledb.tx.Transaction;
 import simpledb.metadata.*;
 import simpledb.parse.*;
@@ -41,10 +40,6 @@ public class BasicQueryPlanner implements QueryPlanner {
         Plan p = plans.remove(0);
         for (Plan nextplan : plans)
             p = new ProductPlan(p, nextplan);
-
-        for (Expression extendPlan : data.getExtendPlans()){
-            p = new ProductPlan(p, new ExtendPlan(p, extendPlan, ""));
-        }
 
         //Step 3: Add a selection plan for the predicate
         p = new SelectPlan(p, data.pred());

@@ -12,8 +12,6 @@ import simpledb.query.*;
 public class QueryData {
     private List<String> fields;
     private Collection<String> tables;
-
-    private Collection<Expression> extendPlans;
     private Predicate pred;
 
     /**
@@ -51,10 +49,6 @@ public class QueryData {
      */
     public Predicate pred() {
         return pred;
-    }
-
-    public Collection<Expression> getExtendPlans() {
-        return extendPlans;
     }
 
     public String toString() {
