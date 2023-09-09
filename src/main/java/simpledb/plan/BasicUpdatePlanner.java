@@ -2,7 +2,6 @@ package simpledb.plan;
 
 import java.util.Iterator;
 
-import simpledb.record.TableScan;
 import simpledb.tx.Transaction;
 import simpledb.parse.*;
 import simpledb.query.*;
@@ -49,8 +48,8 @@ public class BasicUpdatePlanner implements UpdatePlanner {
 
     public int executeInsert(InsertData data, Transaction tx) {
         Plan p = new TablePlan(tx, data.tableName(), mdm);
-        TableScan us = (TableScan) p.open();
-        us.insertFromEnd();
+        UpdateScan us = (UpdateScan) p.open();
+        us.insert();
         Iterator<Constant> iter = data.vals().iterator();
         for (String fldname : data.fields()) {
             Constant val = iter.next();
