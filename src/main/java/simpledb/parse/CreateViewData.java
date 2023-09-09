@@ -34,8 +34,4 @@ public class CreateViewData {
     public String viewDef() {
         return qrydata.toString();
     }
-
-    public QueryData getQuerydata() {
-        return qrydata;
-    }
 }

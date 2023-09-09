@@ -1,14 +1,7 @@
 package simpledb.plan;
 
-import simpledb.metadata.MetadataMgr;
-import simpledb.record.Layout;
 import simpledb.tx.Transaction;
 import simpledb.parse.*;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * The object that executes SQL statements.
@@ -34,7 +27,7 @@ public class Planner {
     public Plan createQueryPlan(String qry, Transaction tx) {
         Parser parser = new Parser(qry);
         QueryData data = parser.query();
-        verifyQuery(data, tx);
+        verifyQuery(data);
         return qplanner.createPlan(data, tx);
     }
 
@@ -52,7 +45,7 @@ public class Planner {
     public int executeUpdate(String cmd, Transaction tx) {
         Parser parser = new Parser(cmd);
         Object data = parser.updateCmd();
-        verifyUpdate(data, tx);
+        verifyUpdate(data);
         if (data instanceof InsertData)
             return uplanner.executeInsert((InsertData) data, tx);
         else if (data instanceof DeleteData)
@@ -70,48 +63,10 @@ public class Planner {
     }
 
     // SimpleDB does not verify queries, although it should.
-    private void verifyQuery(QueryData data, Transaction tx) {
-        verifyTableNames(data.tables(), tx);
+    private void verifyQuery(QueryData data) {
     }
 
     // SimpleDB does not verify updates, although it should.
-    private void verifyUpdate(Object data, Transaction tx) {
-        List<String> tableName = new ArrayList<>(1);
-        if (data instanceof InsertData) {
-            InsertData insertData = (InsertData) data;
-            tableName.add(insertData.tableName());
-            verifyTableNames(tableName, tx);
-
-        } else if (data instanceof DeleteData) {
-            DeleteData deleteData = (DeleteData) data;
-            tableName.add(deleteData.tableName());
-            verifyTableNames(tableName, tx);
-
-        } else if (data instanceof ModifyData) {
-            ModifyData modifyData = (ModifyData) data;
-            tableName.add(modifyData.tableName());
-            verifyTableNames(tableName, tx);
-
-        } else if (data instanceof CreateViewData) {
-            CreateViewData createViewData = (CreateViewData) data;
-            verifyTableNames(createViewData.getQuerydata().tables(), tx);
-        } else if (data instanceof CreateIndexData) {
-            CreateIndexData createIndexData = (CreateIndexData) data;
-            tableName.add(createIndexData.tableName());
-            verifyTableNames(tableName, tx);
-        } else
-            throw new BadSyntaxException();
-
-    }
-
-    private void verifyTableNames(Collection<String> tables, Transaction tx) {
-        BasicUpdatePlanner updatePlanner = (BasicUpdatePlanner) this.uplanner;
-        MetadataMgr mdm = updatePlanner.getMdm();
-        for (String tblname : tables) {
-            Layout layout = mdm.getLayout(tblname, tx);
-            if (layout == null) {
-                throw new BadSyntaxException();
-            }
-        }
+    private void verifyUpdate(Object data) {
     }
 }
