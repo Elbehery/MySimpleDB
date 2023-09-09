@@ -155,4 +155,8 @@ public class Predicate {
             result += " and " + iter.next().toString();
         return result;
     }
+
+    public List<Term> getTerms() {
+        return terms;
+    }
 }

@@ -39,6 +39,10 @@ public class Expression {
         return fldname != null;
     }
 
+    public boolean isConstant() {
+        return val != null;
+    }
+
     /**
      * Return the constant corresponding to a constant expression,
      * or null if the expression does not
