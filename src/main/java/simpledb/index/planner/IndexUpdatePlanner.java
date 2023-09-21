@@ -2,8 +2,6 @@ package simpledb.index.planner;
 
 import java.util.*;
 
-import com.sun.org.apache.bcel.internal.Const;
-import simpledb.index.query.IndexSelectScan;
 import simpledb.tx.Transaction;
 import simpledb.record.*;
 import simpledb.metadata.*;
@@ -55,39 +53,22 @@ public class IndexUpdatePlanner implements UpdatePlanner {
 
     public int executeDelete(DeleteData data, Transaction tx) {
         String tblname = data.tableName();
-        Map<String, IndexInfo> indexes = mdm.getIndexInfo(tblname, tx);
-        Predicate pred = data.pred();
-        // find constants value of any index within the given predicate; otherwise, IndexSelectScan can not be used
-        Pair pair = null;
-        for (String fld : indexes.keySet()) {
-            Constant val = pred.equatesWithConstant(fld);
-            if (val != null) {
-                pair = new Pair(fld, val);
-                break;
-            }
-        }
-        if (pair == null)
-            throw new RuntimeException("can not use IndexSelectScan");
-
-        // apply deletion
         Plan p = new TablePlan(tx, tblname, mdm);
-        p = new IndexSelectPlan(p, indexes.get(pair.fieldName), pair.val);
+        p = new SelectPlan(p, data.pred());
+        Map<String, IndexInfo> indexes = mdm.getIndexInfo(tblname, tx);
 
-        IndexSelectScan s = (IndexSelectScan) p.open();
+        UpdateScan s = (UpdateScan) p.open();
         int count = 0;
         while (s.next()) {
             // first, delete the record's RID from every index
-            RID rid = s.getRID();
+            RID rid = s.getRid();
             for (String fldname : indexes.keySet()) {
-                if (fldname.equals(pair.fieldName)) {
-                    continue;
-                }
                 Constant val = s.getVal(fldname);
                 Index idx = indexes.get(fldname).open();
                 idx.delete(val, rid);
                 idx.close();
             }
-            // then delete the record && the index used record
+            // then delete the record
             s.delete();
             count++;
         }
@@ -98,23 +79,13 @@ public class IndexUpdatePlanner implements UpdatePlanner {
     public int executeModify(ModifyData data, Transaction tx) {
         String tblname = data.tableName();
         String fldname = data.targetField();
-        IndexInfo ii = mdm.getIndexInfo(tblname, tx).get(fldname);
-        if (ii == null)
-            throw new RuntimeException("can not use IndexSelectScan");
-
-        Predicate pred = data.pred();
-        // find constants value of any index within the given predicate; otherwise, IndexSelectScan can not be used
-        Constant val = pred.equatesWithConstant(fldname);
-        Pair pair = new Pair(fldname, val);
-
-        if (pair == null)
-            throw new RuntimeException("can not use IndexSelectScan");
-
-
         Plan p = new TablePlan(tx, tblname, mdm);
-        p = new IndexSelectPlan(p, ii, pair.val);
+        p = new SelectPlan(p, data.pred());
 
-        IndexSelectScan s = (IndexSelectScan) p.open();
+        IndexInfo ii = mdm.getIndexInfo(tblname, tx).get(fldname);
+        Index idx = (ii == null) ? null : ii.open();
+
+        UpdateScan s = (UpdateScan) p.open();
         int count = 0;
         while (s.next()) {
             // first, update the record
@@ -123,11 +94,14 @@ public class IndexUpdatePlanner implements UpdatePlanner {
             s.setVal(data.targetField(), newval);
 
             // then update the appropriate index, if it exists
-            RID rid = s.getRID();
-            s.deleteIdxRecord(oldval, rid);
-            s.insertIdxRecord(newval, rid);
+            if (idx != null) {
+                RID rid = s.getRid();
+                idx.delete(oldval, rid);
+                idx.insert(newval, rid);
+            }
             count++;
         }
+        if (idx != null) idx.close();
         s.close();
         return count;
     }
@@ -145,23 +119,5 @@ public class IndexUpdatePlanner implements UpdatePlanner {
     public int executeCreateIndex(CreateIndexData data, Transaction tx) {
         mdm.createIndex(data.indexName(), data.tableName(), data.fieldName(), tx);
         return 0;
-    }
-
-    private class Pair {
-        private String fieldName;
-        private Constant val;
-
-        Pair(String fieldName, Constant val) {
-            this.fieldName = fieldName;
-            this.val = val;
-        }
-
-        public String getFieldName() {
-            return fieldName != null ? fieldName : null;
-        }
-
-        public Constant getVal() {
-            return val != null ? val : null;
-        }
     }
 }

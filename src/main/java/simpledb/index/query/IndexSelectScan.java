@@ -60,23 +60,6 @@ public class IndexSelectScan implements Scan {
         return ok;
     }
 
-    public RID getRID() {
-        return idx.getDataRid();
-    }
-
-    public void delete() {
-        idx.delete(val, ts.getRid());
-        ts.delete();
-    }
-
-    public void deleteIdxRecord(Constant val, RID rid) {
-        idx.delete(val, rid);
-    }
-
-    public void insertIdxRecord(Constant val, RID rid) {
-        idx.insert(val, rid);
-    }
-
     /**
      * Returns the value of the field of the current data record.
      *
@@ -102,10 +85,6 @@ public class IndexSelectScan implements Scan {
      */
     public Constant getVal(String fldname) {
         return ts.getVal(fldname);
-    }
-
-    public void setVal(String fldname, Constant val) {
-        ts.setVal(fldname, val);
     }
 
     /**
