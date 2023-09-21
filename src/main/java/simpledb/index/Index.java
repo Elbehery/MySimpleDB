@@ -57,12 +57,3 @@ public interface Index {
      */
     public void close();
 }
-
-/*
-    solution to ex 12.22
-      a) such modification will reduce the number of Directory block && avoid any Overflow blocks
-      b) the insert and delete will not need to use overflow blocks logic && and they will need less disk blocks access
-      c) I do not think it is a good idea, because the index is used to reduce disk block retrieved while accessing data from stored tables.
-      Now since we do not have the RID of each data record, we still need to search the file which is RecordPage (i.e. Bag of records ) and there is no order for the records.
-      If we do not use the index to identify each data record by RID, then we could end up scanning the whole file looking for records.
- */
