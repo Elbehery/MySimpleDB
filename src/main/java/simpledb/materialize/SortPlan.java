@@ -42,6 +42,8 @@ public class SortPlan implements Plan {
     public Scan open() {
         Scan src = p.open();
         List<TempTable> runs = splitIntoRuns(src);
+        if (runs.size() == 0)
+            throw new RuntimeException("can not sort empty table");
         src.close();
         while (runs.size() > 2)
             runs = doAMergeIteration(runs);
@@ -95,10 +97,11 @@ public class SortPlan implements Plan {
     }
 
     private List<TempTable> splitIntoRuns(Scan src) {
-        List<TempTable> temps = new ArrayList<>();
         src.beforeFirst();
-        if (!src.next())
-            return temps;
+        if (!src.next()) {
+            Collections.emptyList();
+        }
+        List<TempTable> temps = new ArrayList<>();
         TempTable currenttemp = new TempTable(tx, sch);
         temps.add(currenttemp);
         UpdateScan currentscan = currenttemp.open();
