@@ -6,6 +6,10 @@ import simpledb.buffer.*;
 import simpledb.tx.recovery.*;
 import simpledb.tx.concurrency.ConcurrencyMgr;
 
+import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Provide transaction management for clients,
  * ensuring that all transactions are serializable, recoverable,
@@ -22,6 +26,8 @@ public class Transaction {
     private FileMgr fm;
     private int txnum;
     private BufferList mybuffers;
+
+    private List<String> tempFiles;
 
     /**
      * Create a new transaction and its associated
@@ -42,6 +48,7 @@ public class Transaction {
         recoveryMgr = new RecoveryMgr(this, txnum, lm, bm);
         concurMgr = new ConcurrencyMgr();
         mybuffers = new BufferList(bm);
+        tempFiles = new LinkedList<>();
     }
 
     /**
@@ -55,6 +62,9 @@ public class Transaction {
         System.out.println("transaction " + txnum + " committed");
         concurMgr.release();
         mybuffers.unpinAll();
+        // delete all temp files
+        for (String filename : tempFiles)
+            new File(fm.getDbDirectory(), filename).delete();
     }
 
     /**
@@ -69,6 +79,9 @@ public class Transaction {
         System.out.println("transaction " + txnum + " rolled back");
         concurMgr.release();
         mybuffers.unpinAll();
+        // delete all temp files
+        for (String filename : tempFiles)
+            new File(fm.getDbDirectory(), filename).delete();
     }
 
     /**
