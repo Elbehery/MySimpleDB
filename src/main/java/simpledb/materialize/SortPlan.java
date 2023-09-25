@@ -102,14 +102,25 @@ public class SortPlan implements Plan {
         TempTable currenttemp = new TempTable(tx, sch);
         temps.add(currenttemp);
         UpdateScan currentscan = currenttemp.open();
-        while (copy(src, currentscan))
-            if (comp.compare(src, currentscan) < 0) {
+
+        int availableSpace = tx.blockSize();
+        while (src.next()) {
+            if (availableSpace < currenttemp.getLayout().slotSize()) {
+                // sort the temp
+                sortInPlace(currentscan);
                 // start a new run
                 currentscan.close();
                 currenttemp = new TempTable(tx, sch);
                 temps.add(currenttemp);
                 currentscan = (UpdateScan) currenttemp.open();
+                // reset available space
+                availableSpace = tx.blockSize();
             }
+
+            copy(src, currentscan);
+            // update available space
+            availableSpace -= currenttemp.getLayout().slotSize();
+        }
         currentscan.close();
         return temps;
     }
@@ -156,6 +167,26 @@ public class SortPlan implements Plan {
         dest.insert();
         for (String fldname : sch.fields())
             dest.setVal(fldname, src.getVal(fldname));
-        return src.next();
+        return true;
+    }
+
+    private void sortInPlace(UpdateScan scan) {
+        UpdateScan copy = scan;
+        scan.beforeFirst();
+        while (scan.next()) {
+            RID outer = scan.getRid();
+            RID nextInOrder = null;
+            while (copy.next()) {
+                RID inner = scan.getRid();
+                if (outer.equals(inner))
+                    continue;
+                if (comp.compare(copy, scan) < 0) {
+                    nextInOrder = new RID(copy.getRid().blockNumber(), copy.getRid().slot());
+                }
+            }
+            if (!outer.equals(nextInOrder)){
+                //swap records
+            }
+        }
     }
 }
