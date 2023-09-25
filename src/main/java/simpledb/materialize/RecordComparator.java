@@ -45,8 +45,4 @@ public class RecordComparator implements Comparator<Scan> {
         }
         return 0;
     }
-
-    public List<String> getFields() {
-        return fields;
-    }
 }
