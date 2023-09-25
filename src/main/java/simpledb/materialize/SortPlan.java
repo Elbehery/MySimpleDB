@@ -126,19 +126,31 @@ public class SortPlan implements Plan {
         return result;
     }
 
-    private TempTable mergeTwoRuns(TempTable p1, TempTable p2) {
+    private TempTable mergeTwoRuns(TempTable p1, TempTable p2, TempTable p3) {
         Scan src1 = p1.open();
         Scan src2 = p2.open();
+        Scan src3 = p3.open();
         TempTable result = new TempTable(tx, sch);
         UpdateScan dest = result.open();
 
         boolean hasmore1 = src1.next();
         boolean hasmore2 = src2.next();
-        while (hasmore1 && hasmore2)
-            if (comp.compare(src1, src2) < 0)
-                hasmore1 = copy(src1, dest);
-            else
-                hasmore2 = copy(src2, dest);
+        boolean hasmore3 = src3.next();
+        while (hasmore1 && hasmore2 && hasmore3) {
+            if (comp.compare(src1, src2) < 0) {
+                if (comp.compare(src1, src3) < 0) {
+                    hasmore1 = copy(src1, dest);
+                } else {
+                    hasmore3 = copy(src3, dest);
+                }
+            } else {
+                if (comp.compare(src2, src3) < 0) {
+                    hasmore2 = copy(src2, dest);
+                } else {
+                    hasmore3 = copy(src3, dest);
+                }
+            }
+        }
 
         if (hasmore1)
             while (hasmore1)
@@ -148,6 +160,7 @@ public class SortPlan implements Plan {
                 hasmore2 = copy(src2, dest);
         src1.close();
         src2.close();
+        src3.close();
         dest.close();
         return result;
     }
