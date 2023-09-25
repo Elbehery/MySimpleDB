@@ -84,8 +84,4 @@ public class FileMgr {
         }
         return f;
     }
-
-    public File getDbDirectory() {
-        return dbDirectory;
-    }
 }
