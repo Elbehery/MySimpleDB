@@ -26,8 +26,13 @@ public class MultibufferProductPlan implements Plan {
      */
     public MultibufferProductPlan(Transaction tx, Plan lhs, Plan rhs) {
         this.tx = tx;
-        this.lhs = new MaterializePlan(tx, lhs);
-        this.rhs = rhs;
+        if (lhs.blocksAccessed() < rhs.blocksAccessed()) {
+            this.lhs = new MaterializePlan(tx, rhs);
+            this.rhs = lhs;
+        } else {
+            this.lhs = new MaterializePlan(tx, lhs);
+            this.rhs = rhs;
+        }
         schema.addAll(lhs.schema());
         schema.addAll(rhs.schema());
     }
