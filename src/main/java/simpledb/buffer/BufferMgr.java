@@ -3,8 +3,6 @@ package simpledb.buffer;
 import simpledb.file.*;
 import simpledb.log.LogMgr;
 
-import java.util.List;
-
 /**
  * Manages the pinning and unpinning of buffers to blocks.
  *
@@ -88,17 +86,6 @@ public class BufferMgr {
         } catch (InterruptedException e) {
             throw new BufferAbortException();
         }
-    }
-
-    public synchronized boolean reserveBuffers(int n) {
-        if (n < numAvailable)
-            return false;
-
-        int count = 0;
-        while (count < n)
-            pin(null);
-
-        return true;
     }
 
     private boolean waitingTooLong(long starttime) {

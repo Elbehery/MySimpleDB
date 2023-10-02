@@ -1,7 +1,5 @@
 package simpledb.multibuffer;
 
-import simpledb.buffer.BufferMgr;
-
 /**
  * A class containing static methods,
  * which estimate the optimal number of buffers
@@ -10,13 +8,6 @@ import simpledb.buffer.BufferMgr;
  * @author Edward Sciore
  */
 public class BufferNeeds {
-
-    private BufferMgr bm;
-
-    public BufferNeeds(BufferMgr bm) {
-        this.bm = bm;
-    }
-
     /**
      * This method considers the various roots
      * of the specified output size (in blocks),
@@ -61,9 +52,5 @@ public class BufferNeeds {
             k = (int) Math.ceil(size / i);
         }
         return k;
-    }
-
-    public boolean reserveBuffers(int n) {
-        return bm.reserveBuffers(n);
     }
 }
