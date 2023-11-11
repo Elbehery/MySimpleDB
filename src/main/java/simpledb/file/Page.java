@@ -7,11 +7,8 @@ public class Page {
     private ByteBuffer bb;
     public static Charset CHARSET = StandardCharsets.US_ASCII;
 
-    private int blockSize;
-
     // For creating data buffers
     public Page(int blocksize) {
-        this.blockSize = blocksize;
         bb = ByteBuffer.allocateDirect(blocksize);
     }
 
@@ -25,9 +22,6 @@ public class Page {
     }
 
     public void setInt(int offset, int n) {
-        if (offset + Integer.BYTES > blockSize) {
-            throw new RuntimeException();
-        }
         bb.putInt(offset, n);
     }
 
@@ -40,9 +34,6 @@ public class Page {
     }
 
     public void setBytes(int offset, byte[] b) {
-        if (offset + b.length + Integer.BYTES > blockSize) {
-            throw new RuntimeException();
-        }
         bb.position(offset);
         bb.putInt(b.length);
         bb.put(b);
@@ -55,9 +46,6 @@ public class Page {
 
     public void setString(int offset, String s) {
         byte[] b = s.getBytes(CHARSET);
-        if (offset + b.length + Integer.BYTES > blockSize) {
-            throw new RuntimeException();
-        }
         setBytes(offset, b);
     }
 
