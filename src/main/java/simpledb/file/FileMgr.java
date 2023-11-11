@@ -9,8 +9,6 @@ public class FileMgr {
     private boolean isNew;
     private Map<String, RandomAccessFile> openFiles = new HashMap<>();
 
-    private int readBlks, writtenBlks;
-
     public FileMgr(File dbDirectory, int blocksize) {
         this.dbDirectory = dbDirectory;
         this.blocksize = blocksize;
@@ -31,7 +29,6 @@ public class FileMgr {
             RandomAccessFile f = getFile(blk.fileName());
             f.seek(blk.number() * blocksize);
             f.getChannel().read(p.contents());
-            this.readBlks++;
         } catch (IOException e) {
             throw new RuntimeException("cannot read block " + blk);
         }
@@ -42,7 +39,6 @@ public class FileMgr {
             RandomAccessFile f = getFile(blk.fileName());
             f.seek(blk.number() * blocksize);
             f.getChannel().write(p.contents());
-            this.writtenBlks++;
         } catch (IOException e) {
             throw new RuntimeException("cannot write block" + blk);
         }
@@ -87,13 +83,5 @@ public class FileMgr {
             openFiles.put(filename, f);
         }
         return f;
-    }
-
-    public int getReadBlks() {
-        return readBlks;
-    }
-
-    public int getWrittenBlks() {
-        return writtenBlks;
     }
 }
