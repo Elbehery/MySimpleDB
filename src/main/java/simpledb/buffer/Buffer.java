@@ -13,7 +13,7 @@ import simpledb.log.LogMgr;
  *
  * @author Edward Sciore
  */
-public class Buffer {
+public class Buffer implements Comparable<Buffer> {
     private FileMgr fm;
     private LogMgr lm;
     private Page contents;
@@ -46,6 +46,10 @@ public class Buffer {
         this.txnum = txnum;
         if (lsn >= 0)
             this.lsn = lsn;
+    }
+
+    public boolean isModified() {
+        return txnum > -1;
     }
 
     /**
@@ -100,5 +104,14 @@ public class Buffer {
      */
     void unpin() {
         pins--;
+    }
+
+    public int getLsn() {
+        return lsn;
+    }
+
+    @Override
+    public int compareTo(Buffer o) {
+        return this.getLsn() - o.getLsn();
     }
 }
