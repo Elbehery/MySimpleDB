@@ -48,10 +48,6 @@ public class Buffer {
             this.lsn = lsn;
     }
 
-    public boolean isModified() {
-        return txnum == -1;
-    }
-
     /**
      * Return true if the buffer is currently pinned
      * (that is, if it has a nonzero pin count).

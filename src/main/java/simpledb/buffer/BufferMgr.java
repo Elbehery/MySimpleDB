@@ -126,16 +126,9 @@ public class BufferMgr {
     }
 
     private Buffer chooseUnpinnedBuffer() {
-        // search for unmodified Buff first
         for (Buffer buff : bufferpool)
-            if (!buff.isPinned() && !buff.isModified())
+            if (!buff.isPinned())
                 return buff;
-
-        for (Buffer buff : bufferpool) {
-            if (!buff.isPinned()) {
-                return buff;
-            }
-        }
         return null;
     }
 }
