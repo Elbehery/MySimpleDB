@@ -3,11 +3,6 @@ package simpledb.buffer;
 import simpledb.file.*;
 import simpledb.log.LogMgr;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-
 /**
  * Manages the pinning and unpinning of buffers to blocks.
  *
@@ -131,17 +126,9 @@ public class BufferMgr {
     }
 
     private Buffer chooseUnpinnedBuffer() {
-        List<Buffer> modifiedBuffs = new LinkedList<>();
         for (Buffer buff : bufferpool)
-            if (!buff.isPinned() && buff.isModified())
-                modifiedBuffs.add(buff);
-
-        Collections.sort(modifiedBuffs, new Comparator<Buffer>() {
-            @Override
-            public int compare(Buffer o1, Buffer o2) {
-                return o1.getLsn() - o2.getLsn();
-            }
-        });
-        return modifiedBuffs.get(0);
+            if (!buff.isPinned())
+                return buff;
+        return null;
     }
 }
