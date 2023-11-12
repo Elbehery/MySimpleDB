@@ -3,14 +3,19 @@ package simpledb.buffer;
 import simpledb.file.*;
 import simpledb.log.LogMgr;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Queue;
+
 /**
  * Manages the pinning and unpinning of buffers to blocks.
  *
  * @author Edward Sciore
  */
 public class BufferMgr {
-    private Buffer[] bufferpool;
-    private int numAvailable;
+    private Map<BlockId, Buffer> assignedBuffs;
+    private Queue<Buffer> unpinnedBuffs;
     private static final long MAX_TIME = 10000; // 10 seconds
 
     /**
@@ -22,10 +27,10 @@ public class BufferMgr {
      * @param numbuffs the number of buffer slots to allocate
      */
     public BufferMgr(FileMgr fm, LogMgr lm, int numbuffs) {
-        bufferpool = new Buffer[numbuffs];
-        numAvailable = numbuffs;
+        assignedBuffs = new HashMap<>();
+        unpinnedBuffs = new LinkedList<>();
         for (int i = 0; i < numbuffs; i++)
-            bufferpool[i] = new Buffer(fm, lm);
+            unpinnedBuffs.add(new Buffer(fm, lm));
     }
 
     /**
@@ -34,7 +39,7 @@ public class BufferMgr {
      * @return the number of available buffers
      */
     public synchronized int available() {
-        return numAvailable;
+        return unpinnedBuffs.size();
     }
 
     /**
@@ -43,7 +48,7 @@ public class BufferMgr {
      * @param txnum the transaction's id number
      */
     public synchronized void flushAll(int txnum) {
-        for (Buffer buff : bufferpool)
+        for (Buffer buff : assignedBuffs.values())
             if (buff.modifyingTx() == txnum)
                 buff.flush();
     }
@@ -58,7 +63,7 @@ public class BufferMgr {
     public synchronized void unpin(Buffer buff) {
         buff.unpin();
         if (!buff.isPinned()) {
-            numAvailable++;
+            unpinnedBuffs.add(buff);
             notifyAll();
         }
     }
@@ -108,27 +113,24 @@ public class BufferMgr {
             buff = chooseUnpinnedBuffer();
             if (buff == null)
                 return null;
+            unpinnedBuffs.remove(buff);
             buff.assignToBlock(blk);
+            assignedBuffs.put(blk, buff);
         }
-        if (!buff.isPinned())
-            numAvailable--;
         buff.pin();
         return buff;
     }
 
     private Buffer findExistingBuffer(BlockId blk) {
-        for (Buffer buff : bufferpool) {
-            BlockId b = buff.block();
-            if (b != null && b.equals(blk))
-                return buff;
-        }
-        return null;
+        return assignedBuffs.get(blk);
     }
 
     private Buffer chooseUnpinnedBuffer() {
-        for (Buffer buff : bufferpool)
-            if (!buff.isPinned())
-                return buff;
+        Buffer buffer = unpinnedBuffs.poll();
+        if (buffer != null) {
+            unpinnedBuffs.remove(buffer);
+            assignedBuffs.remove(buffer.block());
+        }
         return null;
     }
 }
