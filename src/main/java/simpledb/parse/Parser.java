@@ -39,9 +39,9 @@ public class Parser {
 
     public Term term() {
         Expression lhs = expression();
-        lex.eatDelim('=');
+        String op = parseTermOperator();
         Expression rhs = expression();
-        return new Term(lhs, rhs);
+        return new Term(lhs, rhs, op);
     }
 
     public Predicate predicate() {
@@ -241,6 +241,21 @@ public class Parser {
         String fldname = field();
         lex.eatDelim(')');
         return new CreateIndexData(idxname, tblname, fldname);
+    }
+
+    private String parseTermOperator() {
+        if (lex.matchDelim('<')) {
+            lex.eatDelim('<');
+            return "<";
+        } else if (lex.matchDelim('=')) {
+            lex.eatDelim('=');
+            return "=";
+        } else if (lex.matchDelim('>')) {
+            lex.eatDelim('>');
+            return ">";
+        } else {
+            throw new RuntimeException("Unsupported Operation ");
+        }
     }
 }
 
