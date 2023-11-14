@@ -70,4 +70,6 @@ public interface UpdatePlanner {
      * @return the number of affected records
      */
     public int executeCreateIndex(CreateIndexData data, Transaction tx);
+
+    public int dropIndex(DropIndexData data, Transaction tx);
 }
