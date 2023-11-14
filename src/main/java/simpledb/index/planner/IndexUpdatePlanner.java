@@ -120,9 +120,4 @@ public class IndexUpdatePlanner implements UpdatePlanner {
         mdm.createIndex(data.indexName(), data.tableName(), data.fieldName(), tx);
         return 0;
     }
-
-    public int dropIndex(DropIndexData data, Transaction tx) {
-        mdm.dropIndex(data.getIdxname(), data.getTblname(), data.getFldname(), tx);
-        return 0;
-    }
 }

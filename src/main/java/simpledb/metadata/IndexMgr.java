@@ -59,19 +59,6 @@ class IndexMgr {
         ts.close();
     }
 
-    public void dropIndex(String idxname, String tblname, String fldname, Transaction tx) {
-        TableScan ts = new TableScan(tx, "idxcat", layout);
-        ts.beforeFirst();
-        while (ts.next()) {
-            if (ts.getString("indexname").equals(idxname) &&
-                    ts.getString("tablename").equals(tblname) &&
-                    ts.getString("fieldname").equals(fldname)) {
-                ts.delete();
-            }
-        }
-        ts.close();
-    }
-
     /**
      * Return a map containing the index info for all indexes
      * on the specified table.
