@@ -1,13 +1,16 @@
 package mysimpledb.recovery;
 
-import mysimpledb.file.BlockID;
-import mysimpledb.file.FileMgr;
 import mysimpledb.file.Page;
 import mysimpledb.log.MyLogMgr;
 import simpledb.file.BlockId;
 import simpledb.tx.Transaction;
 
 public class SetIntRecord implements LogRecord {
+    @Override
+    public void undo(mysimpledb.tx.Transaction tx) {
+
+    }
+
     private int txNum, offset, val;
     private BlockId blockID;
 
@@ -35,7 +38,6 @@ public class SetIntRecord implements LogRecord {
         return txNum;
     }
 
-    @Override
     public void undo(Transaction tx) {
         tx.pin(blockID);
         tx.setInt(blockID, offset, val, false);
