@@ -2,7 +2,6 @@ package mysimpledb.recovery;
 
 import mysimpledb.file.Page;
 import mysimpledb.log.MyLogMgr;
-import mysimpledb.tx.Transaction;
 
 public class CommitRecord implements LogRecord {
     private int txNum;

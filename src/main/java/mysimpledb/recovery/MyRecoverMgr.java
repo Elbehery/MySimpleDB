@@ -4,7 +4,7 @@ package mysimpledb.recovery;
 import mysimpledb.buffer.MyBuffer;
 import mysimpledb.buffer.MyBufferMgr;
 import mysimpledb.log.MyLogMgr;
-import mysimpledb.tx.Transaction;
+import mysimpledb.tx.MyTransaction;
 import simpledb.file.BlockId;
 
 import java.util.HashSet;
@@ -14,10 +14,10 @@ import java.util.Set;
 public class MyRecoverMgr {
     private MyLogMgr logMgr;
     private MyBufferMgr bufferMgr;
-    private Transaction tx;
+    private MyTransaction tx;
     private int txNum;
 
-    public MyRecoverMgr(MyLogMgr logMgr, MyBufferMgr bufferMgr, Transaction tx, int txNum) {
+    public MyRecoverMgr(MyLogMgr logMgr, MyBufferMgr bufferMgr, MyTransaction tx, int txNum) {
         this.logMgr = logMgr;
         this.bufferMgr = bufferMgr;
         this.tx = tx;

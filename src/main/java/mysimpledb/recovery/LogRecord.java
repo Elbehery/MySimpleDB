@@ -1,7 +1,6 @@
 package mysimpledb.recovery;
 
 import mysimpledb.file.Page;
-import mysimpledb.tx.Transaction;
 
 public interface LogRecord {
     static final int CHECKPOINT = 0, START = 1,
