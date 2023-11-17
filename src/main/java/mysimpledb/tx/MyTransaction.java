@@ -96,6 +96,10 @@ public class MyTransaction {
         return fileMgr.append(fileName);
     }
 
+    public int blockSize() {
+        return fileMgr.getBlkSize();
+    }
+
     private static int nextTxNum() {
         return nextTxNum++;
     }
